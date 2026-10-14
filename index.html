@@ -9,10 +9,11 @@
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        <!-- Firebase SDK -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     
     <style>
         :root {
@@ -280,15 +281,67 @@
             margin-top: -5px;
         }
 
+        /* --- Complexity Additions (Services & Tech Stack) --- */
+        .services-section {
+            padding: 100px 50px;
+            background: var(--dark);
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .service-card {
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+            transition: 0.4s;
+        }
+        .service-card:hover { border-color: var(--primary); transform: translateY(-10px); }
+        .service-card i { font-size: 3rem; color: var(--primary); margin-bottom: 20px; }
+        .service-card h4 { font-family: 'Oswald', sans-serif; font-size: 1.8rem; margin-bottom: 15px; }
+
+        .tech-stack {
+            padding: 50px 0;
+            background: #000;
+            text-align: center;
+            border-top: 1px solid rgba(255,74,0,0.2);
+            border-bottom: 1px solid rgba(255,74,0,0.2);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .tech-stack h4 { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--primary); margin-bottom: 20px; }
+        .tech-items { display: inline-block; animation: scrollLeft 15s linear infinite; }
+        .tech-items span { font-size: 1.2rem; font-weight: 800; margin: 0 40px; color: #555; text-transform: uppercase; transition: 0.3s;}
+        .tech-items span:hover { color: #fff; }
+        @keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
         /* --- Games Section --- */
+        /* --- Fix for Section Titles and Spacing --- */
         .section-title {
             text-align: center;
             font-family: 'Oswald', sans-serif;
-            font-size: 4rem;
-            margin: 100px 0 60px;
+            font-size: 3.5rem;
+            margin: 60px 0 30px 0; /* Margin upar-niche balance kari didhi */
             color: #fff;
             text-transform: uppercase;
             letter-spacing: 2px;
+        }
+
+        #downloads {
+            padding: 50px 20px;
+            background: var(--dark);
+            margin-top: 40px;
+        }
+
+        #publicFileList {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
         }
 
         .section-title span {
@@ -411,7 +464,7 @@
             padding: 60px 20px;
             text-align: center;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: 100px;
+            margin-top: 50px;
         }
 
         .footer-logo {
@@ -440,56 +493,87 @@
         
         .footer-socials a:hover { color: var(--primary); }
 
-        /* --- Responsive --- */
+        /* --- Admin Phase Dashboard CSS --- */
+        #adminPhase {
+            display: none; 
+            padding: 100px 50px;
+            min-height: 100vh;
+            background: #000;
+        }
+        .admin-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 40px;
+        }
+        .admin-header h2 { font-family: 'Oswald'; font-size: 3rem; color: #fff; }
+        .admin-header h2 span { color: var(--primary); }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .admin-panel-box { background: var(--card-bg); padding: 30px; border: 1px solid #333; border-radius: 10px; }
+        .upload-trigger-btn { width: 100%; padding: 20px; background: var(--primary); color: #fff; font-size: 1.5rem; border: none; font-family: 'Oswald'; cursor: pointer; transition: 0.3s; }
+        .upload-trigger-btn:hover { background: #fff; color: #000; }
+        
+        /* Rendered File Card Style */
+        .file-card {
+            background: var(--dark); padding: 20px; border: 1px solid #333; border-left: 4px solid var(--primary);
+            border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; gap: 20px; transition: 0.3s;
+        }
+        .file-card:hover { border-left-color: #fff; transform: translateX(10px); }
+
+        /* --- Responsive & Advanced Mobile Menu --- */
         @media (max-width: 900px) {
             .hero-content h1 { font-size: 4.5rem; }
             .floating-video-container { width: 250px; height: 140px; bottom: 20px; right: 20px; }
+            .admin-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
             nav { padding: 15px 20px; }
-            .menu-toggle { display: block; }
+            .menu-toggle { display: block; z-index: 1001; }
             .nav-links {
-                position: absolute;
-                top: 70px;
+                position: fixed;
+                top: 0;
                 right: -100%;
                 flex-direction: column;
-                background: var(--glass);
-                width: 100%;
-                height: calc(100vh - 70px);
-                padding-top: 40px;
-                transition: right 0.4s ease;
+                background: rgba(10, 10, 12, 0.98);
+                width: 75%;
+                height: 100vh;
+                padding-top: 100px;
+                transition: right 0.4s ease-in-out;
+                box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+                border-left: 1px solid var(--primary);
+                z-index: 999;
             }
             .nav-links.active { right: 0; }
+            .nav-links a { font-size: 20px; margin-bottom: 15px; }
             .hero-content h1 { font-size: 3.5rem; }
             .stat-box { width: 50%; margin-bottom: 30px; }
             .games-grid { padding: 0 15px; }
             .floating-video-container { display: none; }
         }
+
         /* --- Login Modal --- */
-            .login-modal {
-                display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%;
-                background-color: rgba(10, 10, 12, 0.95); backdrop-filter: blur(10px);
-                justify-content: center; align-items: center;
-            }
-            .login-box {
-                background: var(--card-bg); padding: 40px; width: 100%; max-width: 400px;
-                border: 2px solid var(--primary);
-                clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
-                text-align: center; position: relative; animation: zoomIn 0.3s;
-            }
-            .login-box h2 { font-family: 'Oswald', sans-serif; font-size: 2rem; margin-bottom: 20px; color: #fff; }
-            .login-box input {
-                width: 100%; padding: 12px; margin-bottom: 15px; background: #0a0a0c;
-                border: 1px solid #333; color: #fff; font-family: 'Montserrat', sans-serif; outline: none;
-            }
-            .login-box input:focus { border-color: var(--primary); }
-            .close-login { position: absolute; top: 10px; right: 15px; color: #fff; font-size: 24px; cursor: pointer; }
-            .auth-btn { width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; text-transform: uppercase;}
-            .auth-btn:hover { background: var(--primary-hover); }
-            .switch-auth { color: var(--text-muted); font-size: 0.9rem; cursor: pointer; }
-            .switch-auth span { color: var(--primary); 
+        .login-modal {
+            display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(10, 10, 12, 0.95); backdrop-filter: blur(10px);
+            justify-content: center; align-items: center;
         }
+        .login-box {
+            background: var(--card-bg); padding: 40px; width: 100%; max-width: 400px;
+            border: 2px solid var(--primary);
+            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+            text-align: center; position: relative; animation: zoomIn 0.3s;
+        }
+        .login-box h2 { font-family: 'Oswald', sans-serif; font-size: 2rem; margin-bottom: 20px; color: #fff; }
+        .login-box input, .login-box select {
+            width: 100%; padding: 12px; margin-bottom: 15px; background: #0a0a0c;
+            border: 1px solid #333; color: #fff; font-family: 'Montserrat', sans-serif; outline: none;
+        }
+        .login-box input:focus, .login-box select:focus { border-color: var(--primary); }
+        .close-login { position: absolute; top: 10px; right: 15px; color: #fff; font-size: 24px; cursor: pointer; }
+        .auth-btn { width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; text-transform: uppercase;}
+        .auth-btn:hover { background: var(--primary-hover); }
+        .switch-auth { color: var(--text-muted); font-size: 0.9rem; cursor: pointer; }
+        .switch-auth span { color: var(--primary); }
+    
         .google-btn {
             background: #fff;
             color: #000;
@@ -506,6 +590,24 @@
     </style>
 </head>
 <body>
+
+    <!-- Upload/Admin Control Modal -->
+    <div id="uploadModal" class="login-modal">
+        <div class="login-box" style="clip-path: none; border-radius: 10px; border: 1px solid #ff4a00;">
+            <span class="close-login" onclick="document.getElementById('uploadModal').style.display='none'">&times;</span>
+            <h2>SECURE UPLOAD</h2>
+            <input type="file" id="adminFile" style="background:#fff; color:#000;">
+            
+            <p style="margin:10px 0; color:var(--text-muted); font-weight:bold; text-align:left;">Who can see this file?</p>
+            <select id="uploadAudience">
+                <option value="users">Only Users (Public)</option>
+                <option value="admin">Only Admin (Are You)</option>
+                <option value="both">Both (Users & Admin)</option>
+            </select>
+            
+            <button class="auth-btn" onclick="submitUpload()">Upload File</button>
+        </div>
+    </div>
 
     <!-- Login Modal -->
     <div id="loginModal" class="login-modal">
@@ -538,101 +640,197 @@
         <div class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
         <div class="nav-links" id="navLinks">
             <a href="#home" onclick="toggleMenu()">Home</a>
-            <a href="#about" onclick="toggleMenu()">About Us</a>
+            <a href="#services" onclick="toggleMenu()">Services</a>
+            <a href="#downloads" onclick="toggleMenu()">Resources</a>
             <a href="#games" onclick="toggleMenu()">Our Games</a>
-            <a href="#trailers" onclick="toggleMenu()">Trailers</a>
-            <a href="#contact" onclick="toggleMenu()">Contact</a>
+            
+            <!-- Admin Button: Visible to everyone, requires passkey -->
+            <a href="#" id="adminNavBtn" style="color: var(--primary);" onclick="enterAdminPhase()"><i class="fas fa-user-shield"></i> Admin Phase</a>
+            
             <button class="login-btn" id="navLoginBtn" onclick="document.getElementById('loginModal').style.display='flex'">LOGIN</button>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <header class="hero" id="home">
-        <!-- New Car/Action Simulation Video -->
-        <video autoplay muted loop playsinline class="hero-video">
-            <!-- Mast Racing Car Action Video -->
-            <source src="https://cdn.pixabay.com/video/2021/08/04/83863-584742461_large.mp4" type="video/mp4">
-        </video>
-        <div class="overlay"></div>
-        <div class="hero-content">
-            <h1 class="animate-up">Next-Gen <span>Gaming</span></h1>
-            <p class="animate-up delay-1">Experience High-Octane Action & Simulation</p>
-            <button class="explore-btn animate-up delay-2" onclick="document.getElementById('games').scrollIntoView();">Explore Games</button>
-        </div>
-    </header>
+    <!-- MAIN WEBSITE CONTENT WRAPPER -->
+    <div id="mainWebsiteContent">
 
-    <!-- Stats Section -->
-    <section class="stats-section" id="about">
-        <div class="stat-box animate-up">
-            <h3><span class="counter" data-target="2">0</span></h3>
-            <p>Epic Titles</p>
-        </div>
-        <div class="stat-box animate-up delay-1">
-            <h3><span class="counter" data-target="500">0</span><span>K+</span></h3>
-            <p>Downloads</p>
-        </div>
-        <div class="stat-box animate-up delay-2">
-            <h3><span class="counter" data-target="100">0</span><span>K+</span></h3>
-            <p>Active Players</p>
-        </div>
-        <div class="stat-box animate-up delay-3">
-            <h3><span class="counter" data-target="4.8">0</span></h3>
-            <p>Avg Rating</p>
-        </div>
-    </section>
+        <!-- Hero Section -->
+        <header class="hero" id="home">
+            <video autoplay muted loop playsinline class="hero-video">
+                <source src="https://cdn.pixabay.com/video/2021/08/04/83863-584742461_large.mp4" type="video/mp4">
+            </video>
+            <div class="overlay"></div>
+            <div class="hero-content">
+                <h1 class="animate-up">Next-Gen <span>Gaming</span></h1>
+                <p class="animate-up delay-1">Experience High-Octane Action & Simulation</p>
+                <button class="explore-btn animate-up delay-2" onclick="document.getElementById('games').scrollIntoView();">Explore Games</button>
+            </div>
+        </header>
 
-    <!-- Games Section -->
-    <section id="games" style="padding-bottom: 100px;">
-        <h2 class="section-title animate-up">FEATURED <span>TITLES</span></h2>
+        <!-- Stats Section -->
+        <section class="stats-section" id="about">
+            <div class="stat-box animate-up">
+                <h3><span class="counter" data-target="2">0</span></h3>
+                <p>Epic Titles</p>
+            </div>
+            <div class="stat-box animate-up delay-1">
+                <h3><span class="counter" data-target="2">0</span><span>K+</span></h3>
+                <p>Downloads</p>
+            </div>
+            <div class="stat-box animate-up delay-2">
+                <h3><span class="counter" data-target="1.6">0</span><span>K+</span></h3>
+                <p>Active Players</p>
+            </div>
+            <div class="stat-box animate-up delay-3">
+                <h3><span class="counter" data-target="4.9">0</span></h3>
+                <p>Avg Rating</p>
+            </div>
+        </section>
+
+        <!-- Our Services Section -->
+        <section class="services-section" id="services">
+            <h2 class="section-title animate-up">Core <span>Expertise</span></h2>
+            <div class="services-grid">
+                <div class="service-card animate-up delay-1">
+                    <i class="fas fa-gamepad"></i>
+                    <h4>Game Development</h4>
+                    <p style="color:var(--text-muted)">End-to-end development of high quality simulations, sports, and RPG games.</p>
+                </div>
+                <div class="service-card animate-up delay-2">
+                    <i class="fas fa-cube"></i>
+                    <h4>3D Modeling & VFX</h4>
+                    <p style="color:var(--text-muted)">Creating immersive environments and hyper-realistic vehicle/character models.</p>
+                </div>
+                <div class="service-card animate-up delay-3">
+                    <i class="fas fa-server"></i>
+                    <h4>Multiplayer Backend</h4>
+                    <p style="color:var(--text-muted)">Robust and scalable server infrastructure using Firebase and custom APIs.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack Marquee -->
+        <section class="tech-stack">
+            <h4>POWERED BY THE BEST TECHNOLOGIES</h4>
+            <div class="tech-items">
+                <span><i class="fab fa-unity"></i> Unity 3D</span>
+                <span>Unreal Engine 5</span>
+                <span><i class="fab fa-node-js"></i> ####.S</span>
+                <span>Fi#### Backend</span>
+                <span>Blender 3D</span>
+                <span>C# & C++</span>
+                <span>Anant AI</span>
+                <!-- Repeat for infinite loop illusion -->
+                <span><i class="fab fa-unity"></i> Unity 3D</span>
+                <span>Unreal Engine 5</span>
+                <span><i class="fab fa-node-js"></i> ####.S</span>
+                <span>Fi#### Backend</span>
+            </div>
+        </section>
+
+        <!-- NEW: Public Downloads Section (For Users) -->
+        <section id="downloads" style="padding: 80px 50px; background: var(--dark);">
+            <h2 class="section-title animate-up">Public <span>Resources</span></h2>
+            <p style="text-align:center; color:var(--text-muted); margin-bottom: 40px;">Files, PDFs, and assets shared by the Anant Krupa team.</p>
+            <div id="publicFileList" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+                <!-- Dynamically injected Public files -->
+            </div>
+        </section>
+
+        <!-- Games Section -->
+        <section id="games" style="padding-top: 50px; padding-bottom: 100px;">
+            <h2 class="section-title animate-up">FEATURED <span>TITLES</span></h2>
+            
+            <div class="games-grid">
+                <!-- Billionaire Game Card -->
+                <div class="game-card animate-up delay-1" onclick="window.open('https://play.google.com/store/apps/details?id=com.tanmay.billionaire', '_blank')">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="Billionaire Game">
+                    <div class="info-overlay">
+                        <h3>BILLIONAIRE</h3>
+                        <p>Business Simulation</p>
+                    </div>
+                </div>
+
+                <!-- Hands of Cricket Game Card -->
+                <div class="game-card animate-up delay-2" onclick="window.open('https://play.google.com/store/apps/details?id=com.tanmay.handsofcricket', '_blank')">
+                    <img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=600&auto=format&fit=crop" alt="Hands of Cricket">
+                    <div class="info-overlay">
+                        <h3>HANDS OF CRICKET</h3>
+                        <p>Sports & Strategy</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer id="contact">
+            <div class="footer-logo">
+                <span class="brand-icon" style="width:25px; height:25px; margin-right:10px;"></span>
+                ANANT KRUPA
+            </div>
+            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto; font-weight: 600;">Crafting top-tier gaming experiences. Join our community and explore virtual worlds like never before.</p>
+            <div class="footer-socials">
+                <a href="#"><i class="fab fa-discord"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+            <p style="color: #4b5563; font-size: 0.9rem; margin-top: 20px; font-weight: 600;">&copy; 2026 Anant Krupa Game Studio. All rights reserved.</p>
+        </footer>
+    
+    </div> <!-- END OF MAIN WEBSITE CONTENT -->
+
+    <!-- --- SECURE ADMIN PHASE --- -->
+    <div id="adminPhase">
+        <div class="admin-header">
+            <h2>ADMIN <span>DASHBOARD</span></h2>
+            <button class="login-btn" onclick="exitAdminPhase()" style="border-color:#fff; color:#fff;">Exit Phase <i class="fas fa-sign-out-alt"></i></button>
+        </div>
         
-        <div class="games-grid">
-            <!-- Billionaire Game Card -->
-            <div class="game-card animate-up delay-1" onclick="window.open('https://play.google.com/store/apps/details?id=com.tanmay.billionaire', '_blank')">
-                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="Billionaire Game">
-                <div class="info-overlay">
-                    <h3>BILLIONAIRE</h3>
-                    <p>Business Simulation</p>
+        <div class="admin-grid">
+            <!-- Left Side: Controls (Only visible to Authorised Admins) -->
+            <div id="adminControlsPanel" style="display:none;">
+                <div class="admin-panel-box" style="margin-bottom: 20px; border-color: var(--primary);">
+                    <h3 style="font-family: 'Oswald'; margin-bottom: 10px; font-size: 2rem;"><i class="fas fa-cloud-upload-alt" style="color:var(--primary)"></i> Secure Uploads</h3>
+                    <p style="color:var(--text-muted); margin-bottom: 20px;">Welcome Authorised Admin! You can upload game assets, PDFs, or private photos to the server.</p>
+                    <button class="upload-trigger-btn" onclick="document.getElementById('uploadModal').style.display='flex'">UPLOAD NEW FILE</button>
+                </div>
+                
+                <!-- Super Admin Power: Add New Admins -->
+                <div class="admin-panel-box" style="border-color: #00ff66;">
+                    <h3 style="font-family: 'Oswald'; margin-bottom: 10px; font-size: 1.8rem;"><i class="fas fa-user-plus" style="color:#00ff66"></i> Grant Admin Access</h3>
+                    <p style="color:var(--text-muted); margin-bottom: 15px; font-size:0.9rem;">Make someone else an admin by entering their email.</p>
+                    <input type="email" id="newAdminEmail" placeholder="Enter Email to make Admin" style="width:100%; padding:12px; margin-bottom:10px; background:#000; color:#fff; border:1px solid #333; outline:none;">
+                    <button onclick="addAdminAccess()" style="width:100%; padding:12px; background:#00ff66; color:#000; font-weight:bold; font-family:'Oswald'; font-size:1.2rem; border:none; cursor:pointer; transition:0.3s;">GRANT ACCESS</button>
                 </div>
             </div>
-
-            <!-- Hands of Cricket Game Card -->
-            <div class="game-card animate-up delay-2" onclick="window.open('https://play.google.com/store/apps/details?id=com.tanmay.handsofcricket', '_blank')">
-                <img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=600&auto=format&fit=crop" alt="Hands of Cricket">
-                <div class="info-overlay">
-                    <h3>HANDS OF CRICKET</h3>
-                    <p>Sports & Strategy</p>
+            
+            <!-- Right Side: Database View (Visible to anyone who passes Anant@03 check) -->
+            <div class="admin-panel-box">
+                <h3 style="font-family: 'Oswald'; margin-bottom: 20px; font-size: 2rem;"><i class="fas fa-database" style="color:var(--primary)"></i> Admin Database Records</h3>
+                <p style="color:var(--text-muted); margin-bottom: 20px;">Files marked as 'Admin' or 'Both'.</p>
+                <div id="adminFileList" style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Dynamically injected Admin files -->
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Side Floating Video Player -->
     <div class="floating-video-container" id="floatingVideo">
         <button class="close-video-btn" onclick="closeFloatingVideo()"><i class="fas fa-times"></i></button>
-        <!-- Retained gameplay trailer -->
         <video autoplay muted loop playsinline>
             <source src="https://cdn.pixabay.com/video/2020/05/25/40141-424754761_large.mp4" type="video/mp4">
         </video>
     </div>
 
-    <!-- Footer -->
-    <footer id="contact">
-        <div class="footer-logo">
-            <span class="brand-icon" style="width:25px; height:25px; margin-right:10px;"></span>
-            ANANT KRUPA
-        </div>
-        <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto; font-weight: 600;">Crafting top-tier gaming experiences. Join our community and explore virtual worlds like never before.</p>
-        <div class="footer-socials">
-            <a href="#"><i class="fab fa-discord"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-youtube"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-        </div>
-        <p style="color: #4b5563; font-size: 0.9rem; margin-top: 20px; font-weight: 600;">&copy; 2026 Anant Krupa Game Studio. All rights reserved.</p>
-    </footer>
-
     <!-- Scripts -->
     <script>
+        // --- DATA LOGIC FOR LOCAL UPLOADS ---
+        const SUPER_ADMIN = "vanshtanmay9@gmail.com";
+        let approvedAdmins = JSON.parse(localStorage.getItem('anantAdminEmails')) || [SUPER_ADMIN];
+        let currentLoggedInEmail = null;
+
         // Navbar Scroll Effect
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('navbar');
@@ -643,7 +841,16 @@
         // Mobile Menu Toggle
         function toggleMenu() {
             const navLinks = document.getElementById('navLinks');
+            const menuIcon = document.querySelector('.menu-toggle i');
             navLinks.classList.toggle('active');
+            
+            if(navLinks.classList.contains('active')) {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+            } else {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
         }
 
         // Close Floating Video
@@ -656,51 +863,33 @@
         // Counter Animation for Stats
         const counters = document.querySelectorAll('.counter');
         const speed = 50; 
-
         const animateCounters = () => {
             counters.forEach(counter => {
                 const target = +counter.getAttribute('data-target');
                 const count = +counter.innerText;
                 const inc = target / speed;
-
                 if (count < target) {
                     counter.innerText = Math.ceil(count + inc);
                     setTimeout(animateCounters, 40);
                 } else {
-                    // Logic to avoid "+" duplicating if it was already handled in HTML structure,
-                    // Note: Handled properly in updated HTML span structure above.
                     counter.innerText = target;
                 }
             });
         }
-
-        // Trigger Counter Animation on scroll
         let observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounters();
-                    observer.unobserve(entry.target);
-                }
+                if (entry.isIntersecting) { animateCounters(); observer.unobserve(entry.target); }
             });
         }, { threshold: 0.5 });
-
         document.querySelector('.stats-section').querySelectorAll('.counter').forEach(c => observer.observe(c));
 
-        // Scroll Animation Trigger for Elements
         const animateElements = document.querySelectorAll('.animate-up');
         const scrollObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    entry.target.style.animationPlayState = 'running';
-                }
-            })
+            entries.forEach(entry => { if(entry.isIntersecting) entry.target.style.animationPlayState = 'running'; })
         });
-        animateElements.forEach(el => {
-            el.style.animationPlayState = 'paused';
-            scrollObserver.observe(el);
-        });
+        animateElements.forEach(el => { el.style.animationPlayState = 'paused'; scrollObserver.observe(el); });
+
         // --- Firebase Logic ---
-        // Tamara Firebase Console mathi 'Config' ahiya paste karo
         const firebaseConfig = {
             apiKey: "AIzaSyDoGy8SUrEDJ9ody4p7YA-_1nABssJcCbs",
             authDomain: "anantweb-12da0.firebaseapp.com",
@@ -709,12 +898,14 @@
             messagingSenderId: "636221130786",
             appId: "1:636221130786:web:2cdf8cb379c9a4ea7e627b",
             measurementId: "G-J6ZBCM4VGF"
-            };
+        };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
         let isLoginMode = true;
 
@@ -725,92 +916,224 @@
         }
 
        function handleAuth() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const errorDisplay = document.getElementById('authError');
-    
-    // Pela error msg clear kari do
-    errorDisplay.innerText = "";
-    errorDisplay.style.color = "#ff4a00"; // Aapni orange theme warning
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDisplay = document.getElementById('authError');
+            errorDisplay.innerText = "";
+            errorDisplay.style.color = "#ff4a00"; 
 
-    // Khali input check
-    if (!email || !password) {
-        errorDisplay.innerText = "Email ane Password banne nakhva jaruri che!";
-        return;
-    }
+            if (!email || !password) {
+                errorDisplay.innerText = "Email ane Password banne nakhva jaruri che!";
+                return;
+            }
 
-    if(isLoginMode) {
-        // --- SIGN IN LOGIC ---
-        auth.signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                alert("Login Successful! Welcome to Anant Krupa.");
-                document.getElementById('loginModal').style.display = 'none';
-                document.getElementById('email').value = "";
-                document.getElementById('password').value = "";
-            })
-            .catch((error) => { 
-                // Error Pakadvani System
-                console.log(error.code); // Console ma check karva mate
-                if (error.code === 'auth/wrong-password') {
-                    errorDisplay.innerText = "Your Pass Was Wrong.";
-                } else if (error.code === 'auth/user-not-found') {
-                    errorDisplay.innerText = "❌ This Email is not registred, please sign-up.";
-                } else if (error.code === 'auth/invalid-credential') {
-                    errorDisplay.innerText = "❌ Your email or pass was wrong";
-                } else if (error.code === 'auth/invalid-email') {
-                    errorDisplay.innerText = "❌ Email's id format was wrong";
-                } else {
-                    errorDisplay.innerText = "❌ " + error.message;
-                }
-            });
-    } else {
-        // --- SIGN UP LOGIC ---
-        auth.createUserWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                alert("Account Created Successfully! You are come Anant World");
-                document.getElementById('loginModal').style.display = 'none';
-                document.getElementById('email').value = "";
-                document.getElementById('password').value = "";
-            })
-            .catch((error) => { 
-                // Sign Up vakhate aavti Errors
-                if (error.code === 'auth/email-already-in-use') {
-                    errorDisplay.innerText = "⚠️ This email id have alredy account, please try another account";
-                } else if (error.code === 'auth/weak-password') {
-                    errorDisplay.innerText = "⚠️ Password make strong(Minimum 6 latter).";
-                } else {
-                    errorDisplay.innerText = "⚠️ " + error.message;
-                }
-            });
-    }
-}   
+            if(isLoginMode) {
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        alert("Login Successful! Welcome to Anant Krupa.");
+                        document.getElementById('loginModal').style.display = 'none';
+                        document.getElementById('email').value = ""; document.getElementById('password').value = "";
+                    })
+                    .catch((error) => { 
+                        if (error.code === 'auth/wrong-password') errorDisplay.innerText = "Your Pass Was Wrong.";
+                        else if (error.code === 'auth/user-not-found') errorDisplay.innerText = "❌ This Email is not registred, please sign-up.";
+                        else if (error.code === 'auth/invalid-credential') errorDisplay.innerText = "❌ Your email or pass was wrong";
+                        else if (error.code === 'auth/invalid-email') errorDisplay.innerText = "❌ Email's id format was wrong";
+                        else errorDisplay.innerText = "❌ " + error.message;
+                    });
+            } else {
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        alert("Account Created Successfully! You are come Anant World");
+                        document.getElementById('loginModal').style.display = 'none';
+                        document.getElementById('email').value = ""; document.getElementById('password').value = "";
+                    })
+                    .catch((error) => { 
+                        if (error.code === 'auth/email-already-in-use') errorDisplay.innerText = "⚠️ This email id have alredy account, please try another account";
+                        else if (error.code === 'auth/weak-password') errorDisplay.innerText = "⚠️ Password make strong(Minimum 6 latter).";
+                        else errorDisplay.innerText = "⚠️ " + error.message;
+                    });
+            }
+        }   
 
-        // User login che ke nahi e check karva
         auth.onAuthStateChanged((user) => {
             const loginBtn = document.getElementById('navLoginBtn');
             if (user) {
+                currentLoggedInEmail = user.email;
                 loginBtn.innerText = "LOGOUT";
-                loginBtn.onclick = () => auth.signOut();
+                loginBtn.onclick = () => { auth.signOut(); exitAdminPhase(); }
             } else {
+                currentLoggedInEmail = null;
                 loginBtn.innerText = "LOGIN";
                 loginBtn.onclick = () => document.getElementById('loginModal').style.display='flex';
+                exitAdminPhase();
             }
+            checkAdminPrivileges();
         });
+
         function signInWithGoogle() {
             const errorDisplay = document.getElementById('authError');
-            errorDisplay.innerText = ""; // Clear old errors
-
+            errorDisplay.innerText = ""; 
             auth.signInWithPopup(googleProvider)
                 .then((result) => {
-                    const user = result.user;
-                    alert("Welcome to Anant Krupa, " + user.displayName + "!");
+                    alert("Welcome to Anant Krupa, " + result.user.displayName + "!");
                     document.getElementById('loginModal').style.display = 'none';
                 })
-                .catch((error) => {
-                    console.log(error);
-                    errorDisplay.innerText = "❌ Google Login Failed: " + error.message;
-                });
+                .catch((error) => { errorDisplay.innerText = "❌ Google Login Failed: " + error.message; });
         }
+
+        // --- ADMIN PHASE LOGIC ---
+        function enterAdminPhase() {
+            let userPasskey = prompt("Are you Admin? Enter Passkey:");
+            if (userPasskey === "Anant@03") {
+                document.getElementById('mainWebsiteContent').style.display = 'none';
+                document.getElementById('adminPhase').style.display = 'block';
+                document.getElementById('navLinks').classList.remove('active');
+                document.querySelector('.menu-toggle i').classList.replace('fa-times', 'fa-bars');
+                checkAdminPrivileges();
+                renderFiles();
+            } else if (userPasskey !== null) { 
+                alert("❌ Wrong Passkey! Access Denied.");
+            }
+        }
+
+        function exitAdminPhase() {
+            document.getElementById('mainWebsiteContent').style.display = 'block';
+            document.getElementById('adminPhase').style.display = 'none';
+        }
+
+        // Check if logged in user has upload rights
+        function checkAdminPrivileges() {
+            if (currentLoggedInEmail && approvedAdmins.includes(currentLoggedInEmail)) {
+                document.getElementById('adminControlsPanel').style.display = 'block';
+            } else {
+                document.getElementById('adminControlsPanel').style.display = 'none';
+            }
+        }
+
+        function addAdminAccess() {
+            let newEmail = document.getElementById('newAdminEmail').value.trim();
+            if(!newEmail) return alert("Please enter an email id!");
+            
+            if(!approvedAdmins.includes(newEmail)) {
+                approvedAdmins.push(newEmail);
+                localStorage.setItem('anantAdminEmails', JSON.stringify(approvedAdmins));
+                alert("✅ Success! " + newEmail + " can now upload files as an Admin.");
+                document.getElementById('newAdminEmail').value = "";
+            } else {
+                alert("This user is already an Admin.");
+            }
+        }
+        
+        function submitUpload() {
+            let fileInput = document.getElementById('adminFile');
+            let audience = document.getElementById('uploadAudience').value;
+            
+            if(fileInput.files.length === 0) {
+                alert("Please select a file first!");
+                return;
+            }
+            
+            let fileName = fileInput.files[0].name;
+            let fileData = {
+                name: fileName,
+                audience: audience,
+                date: new Date().toLocaleDateString()
+            };
+            
+            uploadedFiles.push(fileData);
+            localStorage.setItem('anantUploadedFiles', JSON.stringify(uploadedFiles));
+            
+            alert(`✅ Success! [${fileName}] uploaded successfully for: [${audience.toUpperCase()}]`);
+            document.getElementById('uploadModal').style.display = 'none';
+            fileInput.value = ""; // reset input
+            renderFiles();
+        }
+
+        // Firestore માંથી રિયલ-ટાઈમ ડેટા લાવવા
+db.collection('uploadedFiles').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+    let publicList = document.getElementById('publicFileList');
+    let adminList = document.getElementById('adminFileList');
+    
+    publicList.innerHTML = "";
+    adminList.innerHTML = "";
+    
+    if (snapshot.empty) {
+        publicList.innerHTML = "<p style='color:var(--text-muted); text-align:center; width:100%;'>No public files uploaded yet.</p>";
+        adminList.innerHTML = "<p style='color:var(--text-muted);'>No admin files available.</p>";
+        return;
+    }
+
+    snapshot.forEach((doc) => {
+        let f = doc.data();
+        let badgeColor = f.audience === 'admin' ? '#ff4a00' : (f.audience === 'users' ? '#00ff66' : '#fff');
+        
+        // ફાઈલ કાર્ડ (આમાં <a> ટેગ વાપર્યો છે એટલે ક્લિક કરવાથી ફાઈલ ખૂલી જશે/ડાઉનલોડ થશે)
+        let fileHTML = `
+            <a href="${f.fileUrl}" target="_blank" class="file-card" style="width: ${f.audience==='admin' || f.audience==='both' ? '100%' : '300px'}; border-left-color: ${badgeColor}; text-decoration: none;">
+                <i class="fas ${f.name.includes('.pdf') ? 'fa-file-pdf' : 'fa-image'}" style="font-size: 2rem; color: ${badgeColor};"></i>
+                <div>
+                    <h4 style="color:#fff; font-size:1.1rem; margin-bottom:5px; font-family:'Oswald';">${f.name}</h4>
+                    <p style="color:var(--text-muted); font-size:0.8rem; font-weight:bold;">ACCESS: ${f.audience.toUpperCase()} | DATE: ${f.date}</p>
+                </div>
+            </a>
+        `;
+        
+        // જો 'users' કે 'both' હોય તો Public માં બતાવો
+        if(f.audience === 'users' || f.audience === 'both') publicList.innerHTML += fileHTML;
+        
+        // જો 'admin' કે 'both' હોય તો Admin ડેશબોર્ડમાં બતાવો
+        if(f.audience === 'admin' || f.audience === 'both') adminList.innerHTML += fileHTML;
+    });
+});
+
+        // Initialize file rendering on page load
+        renderFiles();
+        async function submitUpload() {
+    let fileInput = document.getElementById('adminFile');
+    let audience = document.getElementById('uploadAudience').value;
+    let uploadBtn = document.querySelector('#uploadModal .auth-btn'); // બટન પકડવા
+    
+    if(fileInput.files.length === 0) {
+        alert("Please select a file first!");
+        return;
+    }
+    
+    let file = fileInput.files[0];
+    let fileName = file.name;
+    
+    try {
+        // અપલોડ થાય ત્યાં સુધી બટન પર UPLOADING લખાઈ જશે
+        uploadBtn.innerText = "UPLOADING... PLEASE WAIT";
+        uploadBtn.disabled = true;
+
+        // 1. Firebase Storage માં ફાઈલ અપલોડ કરો
+        let storageRef = storage.ref('anant_uploads/' + Date.now() + '_' + fileName);
+        let snapshot = await storageRef.put(file);
+        
+        // 2. અપલોડ થયેલી ફાઈલની ડાઉનલોડ લિંક મેળવો
+        let downloadURL = await snapshot.ref.getDownloadURL();
+
+        // 3. Firestore Database માં ફાઈલની માહિતી સેવ કરો
+        await db.collection('uploadedFiles').add({
+            name: fileName,
+            audience: audience,
+            date: new Date().toLocaleDateString(),
+            fileUrl: downloadURL, // ફાઈલની લિંક
+            timestamp: firebase.firestore.FieldValue.serverTimestamp() // શોર્ટિંગ માટે ટાઈમ
+        });
+
+        alert(`✅ Success! [${fileName}] uploaded successfully for: [${audience.toUpperCase()}]`);
+        document.getElementById('uploadModal').style.display = 'none';
+        fileInput.value = ""; // ઈનપુટ ખાલી કરવા
+    } catch (error) {
+        console.error("Upload Error: ", error);
+        alert("❌ Upload Failed: " + error.message);
+    } finally {
+        uploadBtn.innerText = "Upload File"; // બટન પાછું નોર્મલ
+        uploadBtn.disabled = false;
+    }
+}
     </script>
 </body>
 </html>
