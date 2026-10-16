@@ -1,1205 +1,1154 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anant Krupa - Premium Game Studio</title>
-    <!-- Nava Premium Fonts: Oswald for Aggressive Headers, Montserrat for clean reading -->
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Anant Krupa - Premium Game Studio</title>
+        <!-- Nava Premium Fonts: Oswald for Aggressive Headers, Montserrat for clean reading -->
+        <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+        <!-- FontAwesome for Icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-    
-    <style>
-        :root {
-            /* Navi Color Scheme: Fiery Orange and Deep Graphite */
-            --primary: #ff4a00; 
-            --primary-hover: #ff7300;
-            --dark: #0a0a0c;
-            --card-bg: #15151a;
-            --glass: rgba(10, 10, 12, 0.9);
-            --text-muted: #8b8b99;
-            --neon-blue: #00d2ff;
-            --neon-green: #00ff66;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-            scroll-behavior: smooth;
-        }
-
-        /* --- Custom Cursor --- */
-        body {
-            background-color: var(--dark);
-            color: #fff;
-            overflow-x: hidden;
-            cursor: none; /* Hide default cursor for desktop */
-        }
-
-        .cursor-dot {
-            width: 8px; height: 8px; background: var(--primary);
-            position: fixed; border-radius: 50%; pointer-events: none;
-            z-index: 9999; transform: translate(-50%, -50%);
-            transition: width 0.2s, height 0.2s, background 0.2s;
-        }
-        .cursor-outline {
-            width: 40px; height: 40px; border: 1px solid var(--primary);
-            position: fixed; border-radius: 50%; pointer-events: none;
-            z-index: 9998; transform: translate(-50%, -50%);
-            transition: 0.15s ease-out;
-        }
+        <!-- Firebase SDK -->
+        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
         
-        /* Interactive element hover for cursor */
-        a:hover ~ .cursor-dot, button:hover ~ .cursor-dot, .ide-card:hover ~ .cursor-dot {
-            width: 50px; height: 50px; background: rgba(255, 74, 0, 0.2);
-            mix-blend-mode: difference;
-        }
-
-        /* --- Animated Cyber Grid Background --- */
-        .cyber-grid {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: 
-                linear-gradient(transparent 0%, rgba(255, 74, 0, 0.1) 2%, transparent 3%),
-                linear-gradient(90deg, transparent 0%, rgba(255, 74, 0, 0.05) 2%, transparent 3%);
-            background-size: 50px 50px;
-            z-index: -3;
-            transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
-            animation: gridMove 10s linear infinite;
-            opacity: 0.4;
-        }
-        @keyframes gridMove {
-            0% { transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px); }
-            100% { transform: perspective(500px) rotateX(60deg) translateY(50px) translateZ(-200px); }
-        }
-
-        /* --- Glitch Effect Class --- */
-        .glitch-hover:hover {
-            animation: glitch-anim 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
-        }
-        @keyframes glitch-anim {
-            0% { transform: translate(0) }
-            20% { transform: translate(-2px, 2px) }
-            40% { transform: translate(-2px, -2px) }
-            60% { transform: translate(2px, 2px) }
-            80% { transform: translate(2px, -2px) }
-            100% { transform: translate(0) }
-        }
-
-        /* --- Custom Scrollbar --- */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--dark); }
-        ::-webkit-scrollbar-thumb { background: var(--primary); }
-
-        /* --- Animations (Khatarnak Entry) --- */
-        @keyframes slideInUp {
-            from { transform: translateY(80px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .animate-up {
-            animation: slideInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            opacity: 0;
-        }
-
-        .delay-1 { animation-delay: 0.2s; }
-        .delay-2 { animation-delay: 0.4s; }
-        .delay-3 { animation-delay: 0.6s; }
-
-        /* --- Navbar & Logo --- */
-        nav {
-            position: fixed;
-            top: 0; width: 100%; padding: 20px 50px;
-            display: flex; justify-content: space-between; align-items: center;
-            background: transparent; z-index: 1000; transition: all 0.4s ease;
-        }
-
-        nav.scrolled {
-            background: var(--glass); backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 74, 0, 0.2); padding: 15px 50px;
-        }
-
-        .brand-logo {
-            display: flex; align-items: center; text-decoration: none; color: #fff;
-            font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 700;
-            letter-spacing: 2px; text-transform: uppercase;
-        }
-
-        .brand-icon {
-            display: inline-block; width: 35px; height: 35px; background: var(--primary);
-            position: relative; margin-right: 15px;
-            clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
-            box-shadow: 0 0 15px var(--primary);
-        }
-
-        .nav-links { display: flex; gap: 35px; align-items: center; }
-        .nav-links a {
-            color: #fff; text-decoration: none; font-size: 15px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s; position: relative;
-        }
-
-        .nav-links a::after {
-            content: ''; position: absolute; width: 0; height: 2px;
-            background: var(--primary); bottom: -5px; left: 0; transition: width 0.3s;
-        }
-
-        .nav-links a:hover { color: var(--primary); }
-        .nav-links a:hover::after { width: 100%; }
-
-        .login-btn {
-            border: 2px solid var(--primary); padding: 10px 30px;
-            background: transparent; color: var(--primary);
-            font-weight: 800; font-size: 14px; cursor: pointer;
-            transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
-        }
-
-        .login-btn:hover {
-            background: var(--primary); color: #fff;
-            box-shadow: 0 0 20px rgba(255, 74, 0, 0.5);
-        }
-
-        .menu-toggle { display: none; font-size: 30px; color: var(--primary); cursor: pointer; }
-
-        /* --- Hero Section with Action Video --- */
-        .hero {
-            height: 100vh; position: relative; display: flex; align-items: center;
-            justify-content: center; text-align: center; overflow: hidden;
-        }
-
-        .hero-video {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); min-width: 100%; min-height: 100%;
-            z-index: -2; object-fit: cover; filter: brightness(0.4) contrast(1.2); 
-        }
-
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(0deg, rgba(10,10,12,1) 0%, rgba(10,10,12,0.1) 50%, rgba(10,10,12,0.8) 100%);
-            z-index: -1;
-        }
-
-        .hero-content { z-index: 1; padding: 0 20px; }
-        .hero-content h1 {
-            font-family: 'Oswald', sans-serif; font-size: clamp(3rem, 8vw, 6.5rem);
-            font-weight: 700; text-transform: uppercase;
-            text-shadow: 0 5px 15px rgba(0,0,0,0.8); margin-bottom: 20px;
-            letter-spacing: 4px; line-height: 1.1;
-        }
-
-        .hero-content h1 span { color: var(--primary); text-shadow: 0 0 20px rgba(255,74,0,0.4); }
-
-        .hero-content p {
-            font-size: clamp(1rem, 3vw, 1.5rem); letter-spacing: 2px; color: #ddd;
-            margin-bottom: 40px; font-weight: 400;
-        }
-
-        .btn-container { display:flex; justify-content:center; gap:15px; flex-wrap:wrap; }
-
-        .explore-btn {
-            padding: 16px 45px; font-size: 1.1rem; font-weight: 800;
-            background: var(--primary); color: #fff; border: none;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
-            transition: 0.3s; clip-path: polygon(15px 0%, 100% 0%, calc(100% - 15px) 100%, 0% 100%);
-        }
-        
-        .explore-btn:hover {
-            background: var(--primary-hover); transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(255, 74, 0, 0.4);
-        }
-
-        /* --- Stats / About Section --- */
-        .stats-section {
-            padding: 80px 50px; background: var(--card-bg);
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px; position: relative; text-align: center;
-        }
-        
-        .stats-section::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-        }
-
-        .stat-box h3 { font-family: 'Oswald', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); color: #fff; }
-        .stat-box h3 span { color: var(--primary); text-shadow: 0 0 10px rgba(255,74,0,0.3); }
-        .stat-box p {
-            font-size: 1.1rem; color: var(--text-muted); text-transform: uppercase;
-            letter-spacing: 2px; font-weight: 600; margin-top: -5px;
-        }
-
-        /* --- Services & Tech Stack --- */
-        .services-section { padding: 100px 50px; background: var(--dark); }
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
-        
-        .service-card {
-            background: var(--card-bg); padding: 40px 30px; border: 1px solid rgba(255,255,255,0.05);
-            text-align: center; transition: 0.4s; position: relative; overflow: hidden;
-        }
-        .service-card::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
-            transform: skewX(-20deg); transition: 0.5s;
-        }
-        .service-card:hover::after { left: 150%; }
-        .service-card:hover { border-color: var(--primary); transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .service-card i { font-size: 3rem; color: var(--primary); margin-bottom: 20px; }
-        .service-card h4 { font-family: 'Oswald', sans-serif; font-size: 1.8rem; margin-bottom: 15px; }
-
-        .tech-stack {
-            padding: 50px 0; background: #000; text-align: center;
-            border-top: 1px solid rgba(255,74,0,0.2); border-bottom: 1px solid rgba(255,74,0,0.2);
-            overflow: hidden; white-space: nowrap;
-        }
-        .tech-stack h4 { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--primary); margin-bottom: 20px; letter-spacing: 2px; }
-        .tech-items { display: inline-block; animation: scrollLeft 15s linear infinite; }
-        .tech-items span { font-size: 1.2rem; font-weight: 800; margin: 0 40px; color: #555; text-transform: uppercase; transition: 0.3s;}
-        .tech-items span:hover { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-        @keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-        /* --- IDE SECTION / COMPILER BOXES UPGRADE --- */
-        .section-title {
-            text-align: center; font-family: 'Oswald', sans-serif; font-size: clamp(2.5rem, 5vw, 3.8rem);
-            margin: 60px 0 30px 0; color: #fff; text-transform: uppercase; letter-spacing: 2px;
-        }
-        .section-title span { color: var(--primary); text-shadow: 0 0 15px rgba(255,74,0,0.4); }
-
-        .ide-container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px; align-items: stretch; margin-top: 40px;
-        }
-
-        .ide-card {
-            background: var(--card-bg); border: 2px solid; border-radius: 12px;
-            padding: 35px 30px; display: flex; flex-direction: column; justify-content: space-between;
-            position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 1; overflow: hidden;
-        }
-        
-        .ide-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
-            opacity: 0; transition: opacity 0.4s; z-index: -1;
-        }
-        .ide-card:hover::before { opacity: 1; }
-        .ide-card:hover { transform: translateY(-10px) scale(1.02); }
-
-        .ide-card.windows { border-color: rgba(0, 210, 255, 0.4); box-shadow: 0 0 20px rgba(0,210,255,0.05); }
-        .ide-card.windows:hover { border-color: var(--neon-blue); box-shadow: 0 15px 35px rgba(0, 210, 255, 0.2); }
-        
-        .ide-card.android { border-color: rgba(0, 255, 102, 0.3); box-shadow: 0 0 20px rgba(0,255,102,0.05); }
-        .ide-card.android:hover { border-color: var(--neon-green); box-shadow: 0 15px 35px rgba(0, 255, 102, 0.2); }
-
-        .ide-badge {
-            position: absolute; top: 18px; right: 20px; color: #000; font-size: 0.75rem;
-            font-weight: 800; padding: 4px 10px; border-radius: 4px; text-transform: uppercase;
-        }
-        
-        .ide-download-btn {
-            display: block; text-align: center; text-decoration: none; padding: 16px 20px;
-            color: #000; font-family: 'Oswald', sans-serif; font-size: clamp(1rem, 2vw, 1.3rem);
-            letter-spacing: 1px; font-weight: 800; border-radius: 6px; transition: 0.3s;
-        }
-
-        /* --- Downloads & Games --- */
-        #downloads { padding: 80px 20px; background: var(--dark); margin-top: 40px; }
-        #publicFileList { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px; }
-
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 450px)); justify-content: center; gap: 40px; padding: 0 20px; }
-
-        .game-card {
-            background: var(--card-bg); overflow: hidden; position: relative;
-            cursor: pointer; transition: all 0.4s ease; border-left: 3px solid transparent;
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
-        }
-        .game-card:hover {
-            transform: translateY(-10px); border-left: 3px solid var(--primary);
-            box-shadow: -10px 15px 30px rgba(0,0,0,0.5);
-        }
-        .game-card img { width: 100%; height: 300px; object-fit: cover; transition: transform 0.6s, filter 0.6s; filter: grayscale(50%); }
-        .game-card:hover img { transform: scale(1.1); filter: grayscale(0%); }
-
-        .info-overlay {
-            position: absolute; bottom: 0; width: 100%;
-            background: linear-gradient(to top, rgba(10,10,12,1) 0%, rgba(10,10,12,0) 100%);
-            padding: 40px 20px 20px;
-        }
-        .info-overlay h3 { font-family: 'Oswald', sans-serif; font-size: 2.2rem; text-transform: uppercase; }
-        .info-overlay p { color: var(--primary); margin-top: 5px; font-weight: 800; text-transform: uppercase; }
-
-        /* --- Floating Video --- */
-        .floating-video-container {
-            position: fixed; bottom: 30px; right: 30px; width: 320px; height: 180px;
-            background: #000; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border: 2px solid var(--card-bg); border-bottom: 2px solid var(--primary);
-            transition: all 0.4s; animation: slideInUp 1.5s forwards;
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
-        }
-        .floating-video-container:hover { transform: scale(1.05); }
-        .floating-video-container video { width: 100%; height: 100%; object-fit: cover; }
-        .close-video-btn {
-            position: absolute; top: 0px; right: 0px; background: var(--primary); color: #fff; border: none;
-            width: 30px; height: 30px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center;
-        }
-
-        /* --- Admin Phase --- */
-        #adminPhase { display: none; padding: 100px 5vw; min-height: 100vh; background: #000; }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 40px; flex-wrap: wrap; gap:20px;}
-        .admin-header h2 { font-family: 'Oswald'; font-size: clamp(2rem, 5vw, 3rem); color: #fff; }
-        .admin-header h2 span { color: var(--primary); }
-        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .admin-panel-box { background: var(--card-bg); padding: 30px; border: 1px solid #333; border-radius: 10px; }
-        .upload-trigger-btn { width: 100%; padding: 20px; background: var(--primary); color: #fff; font-size: 1.5rem; border: none; font-family: 'Oswald'; cursor: pointer; transition: 0.3s; }
-        .upload-trigger-btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px var(--primary); }
-        
-        .file-card {
-            background: var(--dark); padding: 20px; border: 1px solid #333; border-left: 4px solid var(--primary);
-            border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; gap: 20px; transition: 0.3s;
-        }
-        .file-card:hover { border-left-color: #fff; transform: translateX(10px); box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
-
-        /* --- Modals --- */
-        .login-modal {
-            display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(10, 10, 12, 0.95); backdrop-filter: blur(10px);
-            justify-content: center; align-items: center; padding: 20px;
-        }
-        .login-box {
-            background: var(--card-bg); padding: 40px; width: 100%; max-width: 400px;
-            border: 2px solid var(--primary);
-            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
-            text-align: center; position: relative; animation: zoomIn 0.3s;
-        }
-        .login-box h2 { font-family: 'Oswald', sans-serif; font-size: 2rem; margin-bottom: 20px; color: #fff; }
-        .login-box input, .login-box select {
-            width: 100%; padding: 12px; margin-bottom: 15px; background: #0a0a0c; border: 1px solid #333;
-            color: #fff; font-family: 'Montserrat', sans-serif; outline: none; transition: 0.3s;
-        }
-        .login-box input:focus, .login-box select:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(255,74,0,0.2); }
-        .close-login { position: absolute; top: 10px; right: 15px; color: #fff; font-size: 24px; cursor: pointer; transition: 0.3s;}
-        .close-login:hover { color: var(--primary); }
-        .auth-btn { width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; text-transform: uppercase; transition: 0.3s;}
-        .auth-btn:hover { background: var(--primary-hover); box-shadow: 0 0 15px rgba(255,74,0,0.5); }
-        .switch-auth { color: var(--text-muted); font-size: 0.9rem; cursor: pointer; margin-top: 10px;}
-        .switch-auth span { color: var(--primary); }
-        .google-btn { background: #fff; color: #000; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .google-btn:hover { background: #e5e5e5; box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
-
-        footer { background: var(--card-bg); padding: 60px 20px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 50px; }
-        .footer-socials a { color: var(--text-muted); font-size: 24px; transition: color 0.3s; margin: 0 12px; }
-        .footer-socials a:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary); transform: scale(1.2); display: inline-block;}
-
-        /* --- FULL MOBILE RESPONSIVENESS (Media Queries) --- */
-        @media (max-width: 992px) {
-            .services-section, #ide, #downloads, #games, .stats-section { padding-left: 20px; padding-right: 20px; }
-            .ide-container { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 768px) {
-            nav { padding: 15px 20px; }
-            .menu-toggle { display: block; z-index: 1001; }
-            .nav-links {
-                position: fixed; top: 0; right: -100%; flex-direction: column; background: rgba(10, 10, 12, 0.98);
-                width: 75%; height: 100vh; padding-top: 100px; transition: right 0.4s ease-in-out;
-                box-shadow: -10px 0 30px rgba(0,0,0,0.8); border-left: 1px solid var(--primary); z-index: 999;
+        <style>
+            :root {
+                /* Navi Color Scheme: Fiery Orange and Deep Graphite */
+                --primary: #ff4a00; 
+                --primary-hover: #ff7300;
+                --dark: #0a0a0c;
+                --card-bg: #15151a;
+                --glass: rgba(10, 10, 12, 0.9);
+                --text-muted: #8b8b99;
+                --neon-blue: #00d2ff;
+                --neon-green: #00ff66;
             }
-            .nav-links.active { right: 0; }
-            .nav-links a { font-size: 20px; margin-bottom: 15px; }
-            .btn-container { flex-direction: column; width: 100%; }
-            .explore-btn { width: 100%; }
-            .floating-video-container { display: none; /* Hide on mobile to save space */ }
-            .ide-card { padding: 25px 20px; }
-        }
-        
-        @media (max-width: 480px) {
-            .hero-content h1 { font-size: 2.8rem; }
-            .stats-section { grid-template-columns: 1fr; }
-            .game-card { width: 100%; }
-            .file-card { width: 100% !important; flex-direction: column; text-align: center; }
-            .admin-header h2 { font-size: 2rem; }
-        }
-    </style>
-</head>
-<body>
 
-    <!-- Cyber Grid Background & Cursor Elements -->
-    <div class="cyber-grid"></div>
-    <div class="cursor-dot"></div>
-    <div class="cursor-outline"></div>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Montserrat', sans-serif;
+                scroll-behavior: smooth;
+            }
 
-    <!-- Anant C++ Studio Dedicated Cloud Download Modal -->
-    <div id="ideDownloadModal" class="login-modal">
-        <div class="login-box" style="clip-path: none; border-radius: 12px; border: 2px solid var(--neon-blue); max-width: 520px; text-align: left; padding: 30px;">
-            <span class="close-login" onclick="closeIdeDownloadModal()">&times;</span>
-            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
-                <i id="ideModalIcon" class="fab fa-windows" style="font-size:2.2rem; color:var(--neon-blue);"></i>
-                <div>
-                    <h2 id="ideModalTitle" style="font-size:1.6rem; margin:0; text-align:left; color:#fff; font-family:'Oswald';">DOWNLOAD ANANT C++ STUDIO</h2>
-                    <span id="ideModalBadge" style="font-size:0.75rem; color:var(--neon-blue); font-weight:800; text-transform:uppercase; letter-spacing:1px;">VERSION 1.0.1 • 100% OFFLINE</span>
-                </div>
-            </div>
+            /* --- Custom Cursor --- */
+            body {
+                background-color: var(--dark);
+                color: #fff;
+                overflow-x: hidden;
+                cursor: none; /* Hide default cursor for desktop */
+            }
+
+            .cursor-dot {
+                width: 8px; height: 8px; background: var(--primary);
+                position: fixed; border-radius: 50%; pointer-events: none;
+                z-index: 9999; transform: translate(-50%, -50%);
+                transition: width 0.2s, height 0.2s, background 0.2s;
+            }
+            .cursor-outline {
+                width: 40px; height: 40px; border: 1px solid var(--primary);
+                position: fixed; border-radius: 50%; pointer-events: none;
+                z-index: 9998; transform: translate(-50%, -50%);
+                transition: 0.15s ease-out;
+            }
             
-            <p id="ideModalDesc" style="color:var(--text-muted); font-size:0.9rem; line-height:1.5; margin-bottom:20px;">
-                Downloading full offline package. If automatic download does not begin, click the high-speed mirror below:
-            </p>
+            /* Interactive element hover for cursor */
+            a:hover ~ .cursor-dot, button:hover ~ .cursor-dot, .ide-card:hover ~ .cursor-dot {
+                width: 50px; height: 50px; background: rgba(255, 74, 0, 0.2);
+                mix-blend-mode: difference;
+            }
 
-            <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
-                <!-- Primary Cloud Download Link -->
-                <a id="idePrimaryDownloadBtn" href="#" class="ide-download-btn glitch-hover" style="background:var(--neon-blue); text-decoration:none; color:#000; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800;">
-                    <i class="fas fa-cloud-download-alt"></i> HIGH-SPEED CLOUD DOWNLOAD
-                </a>
+            /* --- Animated Cyber Grid Background --- */
+            .cyber-grid {
+                position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                background: 
+                    linear-gradient(transparent 0%, rgba(255, 74, 0, 0.1) 2%, transparent 3%),
+                    linear-gradient(90deg, transparent 0%, rgba(255, 74, 0, 0.05) 2%, transparent 3%);
+                background-size: 50px 50px;
+                z-index: -3;
+                transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+                animation: gridMove 10s linear infinite;
+                opacity: 0.4;
+            }
+            @keyframes gridMove {
+                0% { transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px); }
+                100% { transform: perspective(500px) rotateX(60deg) translateY(50px) translateZ(-200px); }
+            }
 
-                <!-- Mirror / Alternate Download Link -->
-                <a id="ideMirrorDownloadBtn" href="#" target="_blank" class="ide-download-btn" style="background:transparent; border:1px solid #444; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px; font-size:0.9rem;">
-                    <i class="fab fa-google-drive" style="color:#00ff66;"></i> Google Drive / Cloud Mirror
-                </a>
+            /* --- Glitch Effect Class --- */
+            .glitch-hover:hover {
+                animation: glitch-anim 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+            }
+            @keyframes glitch-anim {
+                0% { transform: translate(0) }
+                20% { transform: translate(-2px, 2px) }
+                40% { transform: translate(-2px, -2px) }
+                60% { transform: translate(2px, 2px) }
+                80% { transform: translate(2px, -2px) }
+                100% { transform: translate(0) }
+            }
 
-                <!-- Google Play Store (visible for mobile) -->
-                <a id="idePlayStoreBtn" href="https://play.google.com/store/apps/details?id=com.tanmay.anantcomlier" target="_blank" class="ide-download-btn" style="display:none; background:rgba(0,255,102,0.15); border:1px solid #00ff66; color:#00ff66; text-decoration:none; align-items:center; justify-content:center; gap:10px; font-weight:bold;">
-                    <i class="fab fa-google-play"></i> Get on Google Play Store
-                </a>
-            </div>
+            /* --- Custom Scrollbar --- */
+            ::-webkit-scrollbar { width: 8px; }
+            ::-webkit-scrollbar-track { background: var(--dark); }
+            ::-webkit-scrollbar-thumb { background: var(--primary); }
 
-            <div style="background:#0a0a0c; border:1px solid #222; border-radius:6px; padding:12px; font-size:0.8rem; color:#888;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                    <span>File: <strong id="ideModalFile" style="color:#fff;">Anant-CPP-Studio-Setup-v1.0.exe</strong></span>
-                    <span>Size: <strong id="ideModalSize" style="color:#fff;">~112 MB</strong></span>
-                </div>
-                <div>Status: <span style="color:#00ff66; font-weight:bold;">✔ Verified Safe & Virus-Free • 100% Offline</span></div>
+            /* --- Animations (Khatarnak Entry) --- */
+            @keyframes slideInUp {
+                from { transform: translateY(80px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+
+            .animate-up {
+                animation: slideInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+                opacity: 0;
+            }
+
+            .delay-1 { animation-delay: 0.2s; }
+            .delay-2 { animation-delay: 0.4s; }
+            .delay-3 { animation-delay: 0.6s; }
+
+            /* --- Navbar & Logo --- */
+            nav {
+                position: fixed;
+                top: 0; width: 100%; padding: 20px 50px;
+                display: flex; justify-content: space-between; align-items: center;
+                background: transparent; z-index: 1000; transition: all 0.4s ease;
+            }
+
+            nav.scrolled {
+                background: var(--glass); backdrop-filter: blur(20px);
+                border-bottom: 1px solid rgba(255, 74, 0, 0.2); padding: 15px 50px;
+            }
+
+            .brand-logo {
+                display: flex; align-items: center; text-decoration: none; color: #fff;
+                font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 700;
+                letter-spacing: 2px; text-transform: uppercase;
+            }
+
+            .brand-icon {
+                display: inline-block; width: 35px; height: 35px; background: var(--primary);
+                position: relative; margin-right: 15px;
+                clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
+                box-shadow: 0 0 15px var(--primary);
+            }
+
+            .nav-links { display: flex; gap: 35px; align-items: center; }
+            .nav-links a {
+                color: #fff; text-decoration: none; font-size: 15px; font-weight: 600;
+                text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s; position: relative;
+            }
+
+            .nav-links a::after {
+                content: ''; position: absolute; width: 0; height: 2px;
+                background: var(--primary); bottom: -5px; left: 0; transition: width 0.3s;
+            }
+
+            .nav-links a:hover { color: var(--primary); }
+            .nav-links a:hover::after { width: 100%; }
+
+            .login-btn {
+                border: 2px solid var(--primary); padding: 10px 30px;
+                background: transparent; color: var(--primary);
+                font-weight: 800; font-size: 14px; cursor: pointer;
+                transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px;
+                clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+            }
+
+            .login-btn:hover {
+                background: var(--primary); color: #fff;
+                box-shadow: 0 0 20px rgba(255, 74, 0, 0.5);
+            }
+
+            .menu-toggle { display: none; font-size: 30px; color: var(--primary); cursor: pointer; }
+
+            /* --- Hero Section with Action Video --- */
+            .hero {
+                height: 100vh; position: relative; display: flex; align-items: center;
+                justify-content: center; text-align: center; overflow: hidden;
+            }
+
+            .hero-video {
+                position: absolute; top: 50%; left: 50%;
+                transform: translate(-50%, -50%); min-width: 100%; min-height: 100%;
+                z-index: -2; object-fit: cover; filter: brightness(0.4) contrast(1.2); 
+            }
+
+            .overlay {
+                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                background: linear-gradient(0deg, rgba(10,10,12,1) 0%, rgba(10,10,12,0.1) 50%, rgba(10,10,12,0.8) 100%);
+                z-index: -1;
+            }
+
+            .hero-content { z-index: 1; padding: 0 20px; }
+            .hero-content h1 {
+                font-family: 'Oswald', sans-serif; font-size: clamp(3rem, 8vw, 6.5rem);
+                font-weight: 700; text-transform: uppercase;
+                text-shadow: 0 5px 15px rgba(0,0,0,0.8); margin-bottom: 20px;
+                letter-spacing: 4px; line-height: 1.1;
+            }
+
+            .hero-content h1 span { color: var(--primary); text-shadow: 0 0 20px rgba(255,74,0,0.4); }
+
+            .hero-content p {
+                font-size: clamp(1rem, 3vw, 1.5rem); letter-spacing: 2px; color: #ddd;
+                margin-bottom: 40px; font-weight: 400;
+            }
+
+            .btn-container { display:flex; justify-content:center; gap:15px; flex-wrap:wrap; }
+
+            .explore-btn {
+                padding: 16px 45px; font-size: 1.1rem; font-weight: 800;
+                background: var(--primary); color: #fff; border: none;
+                cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+                transition: 0.3s; clip-path: polygon(15px 0%, 100% 0%, calc(100% - 15px) 100%, 0% 100%);
+            }
+            
+            .explore-btn:hover {
+                background: var(--primary-hover); transform: scale(1.05);
+                box-shadow: 0 10px 25px rgba(255, 74, 0, 0.4);
+            }
+
+            /* --- Stats / About Section --- */
+            .stats-section {
+                padding: 80px 50px; background: var(--card-bg);
+                display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 30px; position: relative; text-align: center;
+            }
+            
+            .stats-section::before {
+                content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+                background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            }
+
+            .stat-box h3 { font-family: 'Oswald', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); color: #fff; }
+            .stat-box h3 span { color: var(--primary); text-shadow: 0 0 10px rgba(255,74,0,0.3); }
+            .stat-box p {
+                font-size: 1.1rem; color: var(--text-muted); text-transform: uppercase;
+                letter-spacing: 2px; font-weight: 600; margin-top: -5px;
+            }
+
+            /* --- Services & Tech Stack --- */
+            .services-section { padding: 100px 50px; background: var(--dark); }
+            .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
+            
+            .service-card {
+                background: var(--card-bg); padding: 40px 30px; border: 1px solid rgba(255,255,255,0.05);
+                text-align: center; transition: 0.4s; position: relative; overflow: hidden;
+            }
+            .service-card::after {
+                content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+                background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+                transform: skewX(-20deg); transition: 0.5s;
+            }
+            .service-card:hover::after { left: 150%; }
+            .service-card:hover { border-color: var(--primary); transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+            .service-card i { font-size: 3rem; color: var(--primary); margin-bottom: 20px; }
+            .service-card h4 { font-family: 'Oswald', sans-serif; font-size: 1.8rem; margin-bottom: 15px; }
+
+            .tech-stack {
+                padding: 50px 0; background: #000; text-align: center;
+                border-top: 1px solid rgba(255,74,0,0.2); border-bottom: 1px solid rgba(255,74,0,0.2);
+                overflow: hidden; white-space: nowrap;
+            }
+            .tech-stack h4 { font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--primary); margin-bottom: 20px; letter-spacing: 2px; }
+            .tech-items { display: inline-block; animation: scrollLeft 15s linear infinite; }
+            .tech-items span { font-size: 1.2rem; font-weight: 800; margin: 0 40px; color: #555; text-transform: uppercase; transition: 0.3s;}
+            .tech-items span:hover { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+            @keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+            /* --- IDE SECTION / COMPILER BOXES UPGRADE --- */
+            .section-title {
+                text-align: center; font-family: 'Oswald', sans-serif; font-size: clamp(2.5rem, 5vw, 3.8rem);
+                margin: 60px 0 30px 0; color: #fff; text-transform: uppercase; letter-spacing: 2px;
+            }
+            .section-title span { color: var(--primary); text-shadow: 0 0 15px rgba(255,74,0,0.4); }
+
+            .ide-container {
+                display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 30px; align-items: stretch; margin-top: 40px;
+            }
+
+            .ide-card {
+                background: var(--card-bg); border: 2px solid; border-radius: 12px;
+                padding: 35px 30px; display: flex; flex-direction: column; justify-content: space-between;
+                position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                z-index: 1; overflow: hidden;
+            }
+            
+            .ide-card::before {
+                content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
+                opacity: 0; transition: opacity 0.4s; z-index: -1;
+            }
+            .ide-card:hover::before { opacity: 1; }
+            .ide-card:hover { transform: translateY(-10px) scale(1.02); }
+
+            .ide-card.windows { border-color: rgba(0, 210, 255, 0.4); box-shadow: 0 0 20px rgba(0,210,255,0.05); }
+            .ide-card.windows:hover { border-color: var(--neon-blue); box-shadow: 0 15px 35px rgba(0, 210, 255, 0.2); }
+            
+            .ide-card.android { border-color: rgba(0, 255, 102, 0.3); box-shadow: 0 0 20px rgba(0,255,102,0.05); }
+            .ide-card.android:hover { border-color: var(--neon-green); box-shadow: 0 15px 35px rgba(0, 255, 102, 0.2); }
+
+            .ide-badge {
+                position: absolute; top: 18px; right: 20px; color: #000; font-size: 0.75rem;
+                font-weight: 800; padding: 4px 10px; border-radius: 4px; text-transform: uppercase;
+            }
+            
+            .ide-download-btn {
+                display: block; text-align: center; text-decoration: none; padding: 16px 20px;
+                color: #000; font-family: 'Oswald', sans-serif; font-size: clamp(1rem, 2vw, 1.3rem);
+                letter-spacing: 1px; font-weight: 800; border-radius: 6px; transition: 0.3s;
+            }
+
+            /* --- Downloads & Games --- */
+            #downloads { padding: 80px 20px; background: var(--dark); margin-top: 40px; }
+            #publicFileList { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px; }
+
+            .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 450px)); justify-content: center; gap: 40px; padding: 0 20px; }
+
+            .game-card {
+                background: var(--card-bg); overflow: hidden; position: relative;
+                cursor: pointer; transition: all 0.4s ease; border-left: 3px solid transparent;
+                clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
+            }
+            .game-card:hover {
+                transform: translateY(-10px); border-left: 3px solid var(--primary);
+                box-shadow: -10px 15px 30px rgba(0,0,0,0.5);
+            }
+            .game-card img { width: 100%; height: 300px; object-fit: cover; transition: transform 0.6s, filter 0.6s; filter: grayscale(50%); }
+            .game-card:hover img { transform: scale(1.1); filter: grayscale(0%); }
+
+            .info-overlay {
+                position: absolute; bottom: 0; width: 100%;
+                background: linear-gradient(to top, rgba(10,10,12,1) 0%, rgba(10,10,12,0) 100%);
+                padding: 40px 20px 20px;
+            }
+            .info-overlay h3 { font-family: 'Oswald', sans-serif; font-size: 2.2rem; text-transform: uppercase; }
+            .info-overlay p { color: var(--primary); margin-top: 5px; font-weight: 800; text-transform: uppercase; }
+
+            /* --- Floating Video --- */
+            .floating-video-container {
+                position: fixed; bottom: 30px; right: 30px; width: 320px; height: 180px;
+                background: #000; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+                border: 2px solid var(--card-bg); border-bottom: 2px solid var(--primary);
+                transition: all 0.4s; animation: slideInUp 1.5s forwards;
+                clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+            }
+            .floating-video-container:hover { transform: scale(1.05); }
+            .floating-video-container video { width: 100%; height: 100%; object-fit: cover; }
+            .close-video-btn {
+                position: absolute; top: 0px; right: 0px; background: var(--primary); color: #fff; border: none;
+                width: 30px; height: 30px; cursor: pointer; z-index: 2001; display: flex; align-items: center; justify-content: center;
+            }
+
+            /* --- Admin Phase --- */
+            #adminPhase { display: none; padding: 100px 5vw; min-height: 100vh; background: #000; }
+            .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 40px; flex-wrap: wrap; gap:20px;}
+            .admin-header h2 { font-family: 'Oswald'; font-size: clamp(2rem, 5vw, 3rem); color: #fff; }
+            .admin-header h2 span { color: var(--primary); }
+            .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+            .admin-panel-box { background: var(--card-bg); padding: 30px; border: 1px solid #333; border-radius: 10px; }
+            .upload-trigger-btn { width: 100%; padding: 20px; background: var(--primary); color: #fff; font-size: 1.5rem; border: none; font-family: 'Oswald'; cursor: pointer; transition: 0.3s; }
+            .upload-trigger-btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px var(--primary); }
+            
+            .file-card {
+                background: var(--dark); padding: 20px; border: 1px solid #333; border-left: 4px solid var(--primary);
+                border-radius: 5px; margin-bottom: 15px; display: flex; align-items: center; gap: 20px; transition: 0.3s;
+            }
+            .file-card:hover { border-left-color: #fff; transform: translateX(10px); box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
+
+            /* --- Modals --- */
+            .login-modal {
+                display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%;
+                background-color: rgba(10, 10, 12, 0.95); backdrop-filter: blur(10px);
+                justify-content: center; align-items: center; padding: 20px;
+            }
+            .login-box {
+                background: var(--card-bg); padding: 40px; width: 100%; max-width: 400px;
+                border: 2px solid var(--primary);
+                clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+                text-align: center; position: relative; animation: zoomIn 0.3s;
+            }
+            .login-box h2 { font-family: 'Oswald', sans-serif; font-size: 2rem; margin-bottom: 20px; color: #fff; }
+            .login-box input, .login-box select {
+                width: 100%; padding: 12px; margin-bottom: 15px; background: #0a0a0c; border: 1px solid #333;
+                color: #fff; font-family: 'Montserrat', sans-serif; outline: none; transition: 0.3s;
+            }
+            .login-box input:focus, .login-box select:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(255,74,0,0.2); }
+            .close-login { position: absolute; top: 10px; right: 15px; color: #fff; font-size: 24px; cursor: pointer; transition: 0.3s;}
+            .close-login:hover { color: var(--primary); }
+            .auth-btn { width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; text-transform: uppercase; transition: 0.3s;}
+            .auth-btn:hover { background: var(--primary-hover); box-shadow: 0 0 15px rgba(255,74,0,0.5); }
+            .switch-auth { color: var(--text-muted); font-size: 0.9rem; cursor: pointer; margin-top: 10px;}
+            .switch-auth span { color: var(--primary); }
+            .google-btn { background: #fff; color: #000; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+            .google-btn:hover { background: #e5e5e5; box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+
+            footer { background: var(--card-bg); padding: 60px 20px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 50px; }
+            .footer-socials a { color: var(--text-muted); font-size: 24px; transition: color 0.3s; margin: 0 12px; }
+            .footer-socials a:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary); transform: scale(1.2); display: inline-block;}
+
+            /* --- FULL MOBILE RESPONSIVENESS (Media Queries) --- */
+            @media (max-width: 992px) {
+                .services-section, #ide, #downloads, #games, .stats-section { padding-left: 20px; padding-right: 20px; }
+                .ide-container { grid-template-columns: 1fr; }
+            }
+
+            @media (max-width: 768px) {
+                nav { padding: 15px 20px; }
+                .menu-toggle { display: block; z-index: 1001; }
+                .nav-links {
+                    position: fixed; top: 0; right: -100%; flex-direction: column; background: rgba(10, 10, 12, 0.98);
+                    width: 75%; height: 100vh; padding-top: 100px; transition: right 0.4s ease-in-out;
+                    box-shadow: -10px 0 30px rgba(0,0,0,0.8); border-left: 1px solid var(--primary); z-index: 999;
+                }
+                .nav-links.active { right: 0; }
+                .nav-links a { font-size: 20px; margin-bottom: 15px; }
+                .btn-container { flex-direction: column; width: 100%; }
+                .explore-btn { width: 100%; }
+                .floating-video-container { display: none; /* Hide on mobile to save space */ }
+                .ide-card { padding: 25px 20px; }
+            }
+            
+            @media (max-width: 480px) {
+                .hero-content h1 { font-size: 2.8rem; }
+                .stats-section { grid-template-columns: 1fr; }
+                .game-card { width: 100%; }
+                .file-card { width: 100% !important; flex-direction: column; text-align: center; }
+                .admin-header h2 { font-size: 2rem; }
+            }
+        </style>
+    </head>
+    <body>
+
+        <!-- Cyber Grid Background & Cursor Elements -->
+        <div class="cyber-grid"></div>
+        <div class="cursor-dot"></div>
+        <div class="cursor-outline"></div>
+
+        <!-- Upload/Admin Control Modal -->
+        <div id="uploadModal" class="login-modal">
+            <div class="login-box" style="clip-path: none; border-radius: 10px; border: 1px solid #ff4a00;">
+                <span class="close-login" onclick="document.getElementById('uploadModal').style.display='none'">&times;</span>
+                <h2>SECURE UPLOAD</h2>
+                <input type="file" id="adminFile" style="background:#fff; color:#000;">
+                
+                <p style="margin:10px 0; color:var(--text-muted); font-weight:bold; text-align:left;">Who can see this file?</p>
+                <select id="uploadAudience">
+                    <option value="users">Only Users (Public)</option>
+                    <option value="admin">Only Admin (Are You)</option>
+                    <option value="both">Both (Users & Admin)</option>
+                </select>
+                
+                <button class="auth-btn glitch-hover" onclick="submitUpload()">Upload File</button>
             </div>
         </div>
-    </div>
 
-    <!-- Upload/Admin Control Modal -->
-    <div id="uploadModal" class="login-modal">
-        <div class="login-box" style="clip-path: none; border-radius: 10px; border: 1px solid #ff4a00;">
-            <span class="close-login" onclick="document.getElementById('uploadModal').style.display='none'">&times;</span>
-            <h2>SECURE UPLOAD</h2>
-            <input type="file" id="adminFile" style="background:#fff; color:#000;">
-            
-            <p style="margin:10px 0; color:var(--text-muted); font-weight:bold; text-align:left;">Who can see this file?</p>
-            <select id="uploadAudience">
-                <option value="users">Only Users (Public)</option>
-                <option value="admin">Only Admin (Are You)</option>
-                <option value="both">Both (Users & Admin)</option>
-            </select>
-            
-            <button class="auth-btn glitch-hover" onclick="submitUpload()">Upload File</button>
+        <!-- Login Modal -->
+        <div id="loginModal" class="login-modal">
+            <div class="login-box">
+                <span class="close-login" onclick="document.getElementById('loginModal').style.display='none'">&times;</span>
+                <h2 id="authTitle">SIGN IN</h2>
+                <input type="email" id="email" placeholder="Email Address" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button class="auth-btn glitch-hover" onclick="handleAuth()">Submit</button>
+                <!-- OR Divider -->
+                <div style="margin: 15px 0; color: #8b8b99; font-size: 0.9rem; position: relative;">
+                    <hr style="border-color: #333; margin-bottom: -10px;">
+                    <span style="background: var(--card-bg); padding: 0 10px;">OR</span>
+                </div>
+
+                <!-- Google Sign-In Button -->
+                <button class="auth-btn google-btn glitch-hover" onclick="signInWithGoogle()">
+                    <i class="fab fa-google"></i> Continue with Google
+                </button>
+                <p class="switch-auth" onclick="toggleAuthMode()">Don't have an account? <span>Sign Up</span></p>
+                <p id="authError" style="color: red; font-size: 0.8rem; margin-top: 10px;"></p>
+            </div>
         </div>
-    </div>
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="login-modal">
-        <div class="login-box">
-            <span class="close-login" onclick="document.getElementById('loginModal').style.display='none'">&times;</span>
-            <h2 id="authTitle">SIGN IN</h2>
-            <input type="email" id="email" placeholder="Email Address" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <button class="auth-btn glitch-hover" onclick="handleAuth()">Submit</button>
-            <!-- OR Divider -->
-            <div style="margin: 15px 0; color: #8b8b99; font-size: 0.9rem; position: relative;">
-                <hr style="border-color: #333; margin-bottom: -10px;">
-                <span style="background: var(--card-bg); padding: 0 10px;">OR</span>
+        <!-- Navbar -->
+        <nav id="navbar">
+            <a href="#" class="brand-logo glitch-hover">
+                <span class="brand-icon"></span> Anant Krupa
+            </a>
+            <div class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+            <div class="nav-links" id="navLinks">
+                <a href="#home" onclick="toggleMenu()">Home</a>
+                <a href="#ide" onclick="toggleMenu()" style="color: var(--neon-blue); text-shadow: 0 0 10px rgba(0,210,255,0.4);"><i class="fas fa-laptop-code"></i> C++ IDE</a>
+                <a href="#services" onclick="toggleMenu()">Services</a>
+                <a href="#downloads" onclick="toggleMenu()">Resources</a>
+                <a href="#games" onclick="toggleMenu()">Our Games</a>
+                
+                <!-- Admin Button: Visible to everyone, requires passkey -->
+                <a href="#" id="adminNavBtn" style="color: var(--primary);" onclick="enterAdminPhase()"><i class="fas fa-user-shield"></i> Admin Phase</a>
+                
+                <button class="login-btn glitch-hover" id="navLoginBtn" onclick="document.getElementById('loginModal').style.display='flex'">LOGIN</button>
             </div>
+        </nav>
 
-            <!-- Google Sign-In Button -->
-            <button class="auth-btn google-btn glitch-hover" onclick="signInWithGoogle()">
-                <i class="fab fa-google"></i> Continue with Google
-            </button>
-            <p class="switch-auth" onclick="toggleAuthMode()">Don't have an account? <span>Sign Up</span></p>
-            <p id="authError" style="color: red; font-size: 0.8rem; margin-top: 10px;"></p>
-        </div>
-    </div>
+        <!-- MAIN WEBSITE CONTENT WRAPPER -->
+        <div id="mainWebsiteContent">
 
-    <!-- Navbar -->
-    <nav id="navbar">
-        <a href="#" class="brand-logo glitch-hover">
-            <span class="brand-icon"></span> Anant Krupa
-        </a>
-        <div class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div class="nav-links" id="navLinks">
-            <a href="#home" onclick="toggleMenu()">Home</a>
-            <a href="#ide" onclick="toggleMenu()" style="color: var(--neon-blue); text-shadow: 0 0 10px rgba(0,210,255,0.4);"><i class="fas fa-laptop-code"></i> C++ IDE</a>
-            <a href="#services" onclick="toggleMenu()">Services</a>
-            <a href="#downloads" onclick="toggleMenu()">Resources</a>
-            <a href="#games" onclick="toggleMenu()">Our Games</a>
-            
-            <!-- Admin Button: Visible to everyone, requires passkey -->
-            <a href="#" id="adminNavBtn" style="color: var(--primary);" onclick="enterAdminPhase()"><i class="fas fa-user-shield"></i> Admin Phase</a>
-            
-            <button class="login-btn glitch-hover" id="navLoginBtn" onclick="document.getElementById('loginModal').style.display='flex'">LOGIN</button>
-        </div>
-    </nav>
-
-    <!-- MAIN WEBSITE CONTENT WRAPPER -->
-    <div id="mainWebsiteContent">
-
-        <!-- Hero Section -->
-        <header class="hero" id="home">
-            <video autoplay muted loop playsinline class="hero-video">
-                <source src="https://cdn.pixabay.com/video/2021/08/04/83863-584742461_large.mp4" type="video/mp4">
-            </video>
-            <div class="overlay"></div>
-            <div class="hero-content">
-                <h1 class="animate-up">Next-Gen <span>Gaming & Software</span></h1>
-                <p class="animate-up delay-1">High-Octane Action Games • 100% Offline C/C++ Studio for Laptop & Mobile</p>
-                <div class="btn-container">
-                    <button class="explore-btn animate-up delay-2 glitch-hover" onclick="document.getElementById('ide').scrollIntoView();" style="background:var(--neon-blue); color:#000; box-shadow:0 10px 25px rgba(0,210,255,0.4);"><i class="fab fa-windows"></i> Download C++ IDE (Laptop)</button>
-                    <button class="explore-btn animate-up delay-2 glitch-hover" onclick="document.getElementById('games').scrollIntoView();"><i class="fas fa-gamepad"></i> Explore Games</button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Stats Section -->
-        <section class="stats-section" id="about">
-            <div class="stat-box animate-up">
-                <h3><span class="counter" data-target="2">0</span></h3>
-                <p>Epic Titles</p>
-            </div>
-            <div class="stat-box animate-up delay-1">
-                <h3><span class="counter" data-target="2">0</span><span>K+</span></h3>
-                <p>Downloads</p>
-            </div>
-            <div class="stat-box animate-up delay-2">
-                <h3><span class="counter" data-target="1.6">0</span><span>K+</span></h3>
-                <p>Active Players</p>
-            </div>
-            <div class="stat-box animate-up delay-3">
-                <h3><span class="counter" data-target="4.9">0</span></h3>
-                <p>Avg Rating</p>
-            </div>
-        </section>
-
-        <!-- Our Services Section -->
-        <section class="services-section" id="services">
-            <h2 class="section-title animate-up">Core <span>Expertise</span></h2>
-            <div class="services-grid">
-                <div class="service-card animate-up delay-1">
-                    <i class="fas fa-gamepad"></i>
-                    <h4>Game Development</h4>
-                    <p style="color:var(--text-muted)">End-to-end development of high quality simulations, sports, and RPG games.</p>
-                </div>
-                <div class="service-card animate-up delay-2">
-                    <i class="fas fa-cube"></i>
-                    <h4>3D Modeling & VFX</h4>
-                    <p style="color:var(--text-muted)">Creating immersive environments and hyper-realistic vehicle/character models.</p>
-                </div>
-                <div class="service-card animate-up delay-3">
-                    <i class="fas fa-server"></i>
-                    <h4>Multiplayer Backend</h4>
-                    <p style="color:var(--text-muted)">Robust and scalable server infrastructure using Firebase and custom APIs.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tech Stack Marquee -->
-        <section class="tech-stack">
-            <h4>POWERED BY THE BEST TECHNOLOGIES</h4>
-            <div class="tech-items">
-                <span><i class="fab fa-unity"></i> Unity 3D</span>
-                <span>Unreal Engine 5</span>
-                <span><i class="fab fa-node-js"></i> ####.S</span>
-                <span>Fi#### Backend</span>
-                <span>Blender 3D</span>
-                <span>C# & C++</span>
-                <span>Anant AI</span>
-                <!-- Repeat for infinite loop illusion -->
-                <span><i class="fab fa-unity"></i> Unity 3D</span>
-                <span>Unreal Engine 5</span>
-                <span><i class="fab fa-node-js"></i> ####.S</span>
-                <span>Fi#### Backend</span>
-            </div>
-        </section>
-
-        <!-- ANANT ENVIRONMENT C++ IDE SHOWCASE & DOWNLOAD SECTION -->
-        <section id="ide" style="padding: 90px 40px; background: #0c0c10; border-top: 1px solid rgba(255, 74, 0, 0.2); border-bottom: 1px solid rgba(255, 74, 0, 0.2);">
-            <div style="max-width: 1200px; margin: 0 auto;">
-                <div style="text-align: center; margin-bottom: 50px;">
-                    <div style="display:inline-block; padding: 6px 16px; background: rgba(0, 210, 255, 0.15); border: 1px solid #00d2ff; border-radius: 20px; color: #00d2ff; font-size: 0.9rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0,210,255,0.2);">
-                        <i class="fas fa-microchip"></i> New Release • 100% Offline Software
+            <!-- Hero Section -->
+            <header class="hero" id="home">
+                <video autoplay muted loop playsinline class="hero-video">
+                    <source src="https://cdn.pixabay.com/video/2021/08/04/83863-584742461_large.mp4" type="video/mp4">
+                </video>
+                <div class="overlay"></div>
+                <div class="hero-content">
+                    <h1 class="animate-up">Next-Gen <span>Gaming & Software</span></h1>
+                    <p class="animate-up delay-1">High-Octane Action Games • 100% Offline C/C++ Studio for Laptop & Mobile</p>
+                    <div class="btn-container">
+                        <button class="explore-btn animate-up delay-2 glitch-hover" onclick="document.getElementById('ide').scrollIntoView();" style="background:var(--neon-blue); color:#000; box-shadow:0 10px 25px rgba(0,210,255,0.4);"><i class="fab fa-windows"></i> Download C++ IDE (Laptop)</button>
+                        <button class="explore-btn animate-up delay-2 glitch-hover" onclick="document.getElementById('games').scrollIntoView();"><i class="fas fa-gamepad"></i> Explore Games</button>
                     </div>
-                    <h2 class="section-title" style="margin: 0; font-size: clamp(2.5rem, 6vw, 3.8rem);">ANANT ENVIRONMENT <span style="color:var(--primary);">C++</span></h2>
-                    <p style="color: var(--text-muted); font-size: 1.2rem; max-width: 780px; margin: 15px auto 0; letter-spacing: 1px;">
-                        Complete Offline C and C++ IDE inspired by Dev-C++, Code::Blocks & Visual Studio. Native MinGW-w64 on Windows and self-contained Clang 21 on Android.
-                    </p>
                 </div>
+            </header>
 
-                <div class="ide-container">
+            <!-- Stats Section -->
+            <section class="stats-section" id="about">
+                <div class="stat-box animate-up">
+                    <h3><span class="counter" data-target="2">0</span></h3>
+                    <p>Epic Titles</p>
+                </div>
+                <div class="stat-box animate-up delay-1">
+                    <h3><span class="counter" data-target="2">0</span><span>K+</span></h3>
+                    <p>Downloads</p>
+                </div>
+                <div class="stat-box animate-up delay-2">
+                    <h3><span class="counter" data-target="1.6">0</span><span>K+</span></h3>
+                    <p>Active Players</p>
+                </div>
+                <div class="stat-box animate-up delay-3">
+                    <h3><span class="counter" data-target="4.9">0</span></h3>
+                    <p>Avg Rating</p>
+                </div>
+            </section>
+
+            <!-- Our Services Section -->
+            <section class="services-section" id="services">
+                <h2 class="section-title animate-up">Core <span>Expertise</span></h2>
+                <div class="services-grid">
+                    <div class="service-card animate-up delay-1">
+                        <i class="fas fa-gamepad"></i>
+                        <h4>Game Development</h4>
+                        <p style="color:var(--text-muted)">End-to-end development of high quality simulations, sports, and RPG games.</p>
+                    </div>
+                    <div class="service-card animate-up delay-2">
+                        <i class="fas fa-cube"></i>
+                        <h4>3D Modeling & VFX</h4>
+                        <p style="color:var(--text-muted)">Creating immersive environments and hyper-realistic vehicle/character models.</p>
+                    </div>
+                    <div class="service-card animate-up delay-3">
+                        <i class="fas fa-server"></i>
+                        <h4>Multiplayer Backend</h4>
+                        <p style="color:var(--text-muted)">Robust and scalable server infrastructure using Firebase and custom APIs.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tech Stack Marquee -->
+            <section class="tech-stack">
+                <h4>POWERED BY THE BEST TECHNOLOGIES</h4>
+                <div class="tech-items">
+                    <span><i class="fab fa-unity"></i> Unity 3D</span>
+                    <span>Unreal Engine 5</span>
+                    <span><i class="fab fa-node-js"></i> ####.S</span>
+                    <span>Fi#### Backend</span>
+                    <span>Blender 3D</span>
+                    <span>C# & C++</span>
+                    <span>Anant AI</span>
+                    <!-- Repeat for infinite loop illusion -->
+                    <span><i class="fab fa-unity"></i> Unity 3D</span>
+                    <span>Unreal Engine 5</span>
+                    <span><i class="fab fa-node-js"></i> ####.S</span>
+                    <span>Fi#### Backend</span>
+                </div>
+            </section>
+
+            <!-- ANANT ENVIRONMENT C++ IDE SHOWCASE & DOWNLOAD SECTION -->
+            <section id="ide" style="padding: 90px 40px; background: #0c0c10; border-top: 1px solid rgba(255, 74, 0, 0.2); border-bottom: 1px solid rgba(255, 74, 0, 0.2);">
+                <div style="max-width: 1200px; margin: 0 auto;">
+                    <div style="text-align: center; margin-bottom: 50px;">
+                        <div style="display:inline-block; padding: 6px 16px; background: rgba(0, 210, 255, 0.15); border: 1px solid #00d2ff; border-radius: 20px; color: #00d2ff; font-size: 0.9rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0,210,255,0.2);">
+                            <i class="fas fa-microchip"></i> New Release • 100% Offline Software
+                        </div>
+                        <h2 class="section-title" style="margin: 0; font-size: clamp(2.5rem, 6vw, 3.8rem);">ANANT ENVIRONMENT <span style="color:var(--primary);">C++</span></h2>
+                        <p style="color: var(--text-muted); font-size: 1.2rem; max-width: 780px; margin: 15px auto 0; letter-spacing: 1px;">
+                            Complete Offline C and C++ IDE inspired by Dev-C++, Code::Blocks & Visual Studio. Native MinGW-w64 on Windows and self-contained Clang 21 on Android.
+                        </p>
+                    </div>
+
+                    <div class="ide-container">
+                        
+                        <!-- 1. Windows Desktop / Laptop Card -->
+                        <div class="ide-card windows">
+                            <div class="ide-badge" style="background: var(--neon-blue);">
+                                Laptop / PC
+                            </div>
+                            <div>
+                                <div style="font-size: 3.5rem; color: var(--neon-blue); margin-bottom: 20px;"><i class="fab fa-windows"></i></div>
+                                <h3 style="font-family: 'Oswald', sans-serif; font-size: 2.2rem; color: #fff; margin-bottom: 10px;">WINDOWS LAPTOP</h3>
+                                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
+                                    One-click installer for your laptop. Installs instantly, creates Desktop & Start Menu shortcuts, and includes MinGW-w64 GCC/G++, live interactive input (<code style="color:var(--neon-blue);">scanf / cin</code>), GDB debugger, and Dev-C++ execution window.
+                                </p>
+                                <ul style="list-style: none; padding: 0; margin-bottom: 25px; color: #ccc; font-size: 0.9rem;">
+                                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-blue); margin-right: 8px;"></i> One-Click Setup (Self-Installing .exe)</li>
+                                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-blue); margin-right: 8px;"></i> Automatic Desktop & Start Menu Shortcuts</li>
+                                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-blue); margin-right: 8px;"></i> 100% Offline (Zero Internet Needed)</li>
+                                </ul>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <button onclick="handleIDE_Download('https://github.com/heren-vansh/AnantWeb/releases/download/EXE/Anant-CPP-Studio-Setup-v1.0.exe')" class="ide-download-btn glitch-hover" style="background: var(--neon-blue); border: none; color: #000; box-shadow: 0 8px 25px rgba(0, 210, 255, 0.4); width: 100%; cursor: pointer;" onmouseover="this.style.background='#fff';" onmouseout="this.style.background='var(--neon-blue)';">
+                                    <i class="fas fa-download"></i> ONE-CLICK INSTALLER (.EXE)
+                                </button>
+                                <a href="https://drive.google.com/file/d/1_5zdsCIGLntBZ_IPa8AB2diAeqsxsb8Z/view?usp=sharing" download="Anant-CPP-Studio-Windows-Setup-v1.0.zip" style="display: block; text-align: center; text-decoration: none; padding: 10px 15px; background: transparent; border: 1px solid #444; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.borderColor='#fff'; this.style.color='#fff';" onmouseout="this.style.borderColor='#444'; this.style.color='var(--text-muted)';">
+                                    <i class="fas fa-file-archive"></i> Portable Zip Package (.ZIP)
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- 2. Android Mobile APK Card -->
+                        <div class="ide-card android">
+                            <div class="ide-badge" style="background: var(--neon-green);">
+                                Android Phone
+                            </div>
+                            <div>
+                                <div style="font-size: 3.5rem; color: var(--neon-green); margin-bottom: 20px;"><i class="fab fa-android"></i></div>
+                                <h3 style="font-family: 'Oswald', sans-serif; font-size: 2.2rem; color: #fff; margin-bottom: 10px;">ANDROID MOBILE APK</h3>
+                                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
+                                    Direct installable APK for Android phones and tablets. Fully bundled with LLVM Clang 21 offline compiler, Dev-C++ console, quick coding touch symbols, and offline AI helper.
+                                </p>
+                                <ul style="list-style: none; padding: 0; margin-bottom: 25px; color: #ccc; font-size: 0.9rem;">
+                                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-green); margin-right: 8px;"></i> Direct Install on Any Phone or Tablet</li>
+                                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-green); margin-right: 8px;"></i> Complete LLVM Clang 21 Toolchain Bundled</li>
+                                    <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-green); margin-right: 8px;"></i> Works 100% Without WiFi or Data</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <a href="https://drive.google.com/file/d/1Iy_82Oy-UmdBOMwF3hpDuWb_xGrXp6X6/view?usp=sharing" download="Anant-CPP-Studio-v1.0-debug.apk" class="ide-download-btn glitch-hover" style="background: var(--neon-green); color: #000; box-shadow: 0 8px 25px rgba(0, 255, 102, 0.4);" onmouseover="this.style.background='#fff';" onmouseout="this.style.background='var(--neon-green)';">
+                                    <i class="fas fa-mobile-alt"></i> DOWNLOAD ANDROID APK (120 MB)
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- NEW: Public Downloads Section (For Users) -->
+            <section id="downloads">
+                <h2 class="section-title animate-up">Public <span>Resources</span></h2>
+                <p style="text-align:center; color:var(--text-muted); margin-bottom: 40px;">Files, PDFs, and assets shared by the Anant Krupa team.</p>
+                <div id="publicFileList">
+                    <!-- Dynamically injected Public files -->
+                </div>
+            </section>
+
+            <!-- Games Section -->
+            <section id="games" style="padding-top: 50px; padding-bottom: 100px;">
+                <h2 class="section-title animate-up">FEATURED <span>TITLES</span></h2>
+                
+                <div class="games-grid">
+                    <!-- Billionaire Game Card -->
+                    <div class="game-card animate-up delay-1" onclick="window.open('https://play.google.com/store/apps/details?id=com.tanmay.billionaire', '_blank')">
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="Billionaire Game">
+                        <div class="info-overlay">
+                            <h3>BILLIONAIRE</h3>
+                            <p>Business Simulation</p>
+                        </div>
+                    </div>
+
+                    <!-- Hands of Cricket Game Card -->
+                    <div class="game-card animate-up delay-2" onclick="window.open('https://play.google.com/store/apps/details?id=com.tanmay.handsofcricket', '_blank')">
+                        <img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=600&auto=format&fit=crop" alt="Hands of Cricket">
+                        <div class="info-overlay">
+                            <h3>HANDS OF CRICKET</h3>
+                            <p>Sports & Strategy</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer id="contact">
+                <div class="footer-logo glitch-hover">
+                    <span class="brand-icon" style="width:25px; height:25px; margin-right:10px;"></span>
+                    ANANT KRUPA
+                </div>
+                <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto; font-weight: 600;">Crafting top-tier gaming experiences. Join our community and explore virtual worlds like never before.</p>
+                <div class="footer-socials">
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+                <p style="color: #4b5563; font-size: 0.9rem; margin-top: 20px; font-weight: 600;">&copy; 2026 Anant Krupa Game Studio. All rights reserved.</p>
+            </footer>
+        
+        </div> <!-- END OF MAIN WEBSITE CONTENT -->
+
+        <!-- --- SECURE ADMIN PHASE --- -->
+        <div id="adminPhase">
+            <div class="admin-header">
+                <h2>ADMIN <span>DASHBOARD</span></h2>
+                <button class="login-btn glitch-hover" onclick="exitAdminPhase()" style="border-color:#fff; color:#fff;">Exit Phase <i class="fas fa-sign-out-alt"></i></button>
+            </div>
+            
+            <div class="admin-grid">
+                <!-- Left Side: Controls (Only visible to Authorised Admins) -->
+                <div id="adminControlsPanel" style="display:none;">
+                    <div class="admin-panel-box" style="margin-bottom: 20px; border-color: var(--primary);">
+                        <h3 style="font-family: 'Oswald'; margin-bottom: 10px; font-size: 2rem;"><i class="fas fa-cloud-upload-alt" style="color:var(--primary)"></i> Secure Uploads</h3>
+                        <p style="color:var(--text-muted); margin-bottom: 20px;">Welcome Authorised Admin! You can upload game assets, PDFs, or private photos to the server.</p>
+                        <button class="upload-trigger-btn glitch-hover" onclick="document.getElementById('uploadModal').style.display='flex'">UPLOAD NEW FILE</button>
+                    </div>
+
+                    <!-- Download History Box -->
+                    <div class="admin-panel-box" style="border-color: #ff00ff; margin-bottom: 20px;">
+                        <h3 style="font-family: 'Oswald'; margin-bottom: 10px; font-size: 1.8rem;">
+                            <i class="fas fa-users" style="color:#ff00ff"></i> Download History
+                        </h3>
+                        <p style="color:var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">કયા યુઝરે ફાઈલ ડાઉનલોડ કરી તેનું લિસ્ટ:</p>
+                        
+                        <!-- અહી લિસ્ટ દેખાશે, જો લિસ્ટ મોટું થાય તો જાતે જ સ્ક્રોલ આવી જશે -->
+                        <div id="userDownloadList" style="max-height: 250px; overflow-y: auto; background: #000; padding: 10px; border: 1px solid #333; border-radius: 5px;">
+                            <!-- ડેટા જાવાસ્ક્રિપ્ટ થી આવશે -->
+                        </div>
+                    </div>
                     
-                    <!-- 1. Windows Desktop / Laptop Card -->
-                    <div class="ide-card windows">
-                        <div class="ide-badge" style="background: var(--neon-blue);">
-                            Laptop / PC
-                        </div>
-                        <div>
-                            <div style="font-size: 3.5rem; color: var(--neon-blue); margin-bottom: 20px;"><i class="fab fa-windows"></i></div>
-                            <h3 style="font-family: 'Oswald', sans-serif; font-size: 2.2rem; color: #fff; margin-bottom: 10px;">WINDOWS LAPTOP</h3>
-                            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
-                                One-click installer for your laptop. Installs instantly, creates Desktop & Start Menu shortcuts, and includes MinGW-w64 GCC/G++, live interactive input (<code style="color:var(--neon-blue);">scanf / cin</code>), GDB debugger, and Dev-C++ execution window.
-                            </p>
-                            <ul style="list-style: none; padding: 0; margin-bottom: 25px; color: #ccc; font-size: 0.9rem;">
-                                <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-blue); margin-right: 8px;"></i> One-Click Setup (Self-Installing .exe)</li>
-                                <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-blue); margin-right: 8px;"></i> Automatic Desktop & Start Menu Shortcuts</li>
-                                <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-blue); margin-right: 8px;"></i> 100% Offline (Zero Internet Needed)</li>
-                            </ul>
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 12px;">
-                            <a href="Anant-CPP-Studio-Setup-v1.0.exe" download="Anant-CPP-Studio-Setup-v1.0.exe" onclick="openIdeDownload('windows-exe', event)" class="ide-download-btn glitch-hover" style="background: var(--neon-blue); box-shadow: 0 8px 25px rgba(0, 210, 255, 0.4);" onmouseover="this.style.background='#fff';" onmouseout="this.style.background='var(--neon-blue)';">
-                                <i class="fas fa-download"></i> ONE-CLICK INSTALLER (.EXE)
-                            </a>
-                            <a href="Anant-CPP-Studio-Windows-Setup-v1.0.zip" download="Anant-CPP-Studio-Windows-Setup-v1.0.zip" onclick="openIdeDownload('windows-zip', event)" style="display: block; text-align: center; text-decoration: none; padding: 10px 15px; background: transparent; border: 1px solid #444; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; border-radius: 4px; transition: 0.3s;" onmouseover="this.style.borderColor='#fff'; this.style.color='#fff';" onmouseout="this.style.borderColor='#444'; this.style.color='var(--text-muted)';">
-                                <i class="fas fa-file-archive"></i> Portable Zip Package (.ZIP)
-                            </a>
-                        </div>
+                    <!-- Super Admin Power: Add New Admins -->
+                    <div class="admin-panel-box" style="border-color: #00ff66;">
+                        <h3 style="font-family: 'Oswald'; margin-bottom: 10px; font-size: 1.8rem;"><i class="fas fa-user-plus" style="color:#00ff66"></i> Grant Admin Access</h3>
+                        <p style="color:var(--text-muted); margin-bottom: 15px; font-size:0.9rem;">Make someone else an admin by entering their email.</p>
+                        <input type="email" id="newAdminEmail" placeholder="Enter Email to make Admin" style="width:100%; padding:12px; margin-bottom:10px; background:#000; color:#fff; border:1px solid #333; outline:none;">
+                        <button class="glitch-hover" onclick="addAdminAccess()" style="width:100%; padding:12px; background:#00ff66; color:#000; font-weight:bold; font-family:'Oswald'; font-size:1.2rem; border:none; cursor:pointer; transition:0.3s; box-shadow: 0 0 10px rgba(0,255,102,0.4);">GRANT ACCESS</button>
                     </div>
-
-                    <!-- 2. Android Mobile APK Card -->
-                    <div class="ide-card android">
-                        <div class="ide-badge" style="background: var(--neon-green);">
-                            Android Phone
-                        </div>
-                        <div>
-                            <div style="font-size: 3.5rem; color: var(--neon-green); margin-bottom: 20px;"><i class="fab fa-android"></i></div>
-                            <h3 style="font-family: 'Oswald', sans-serif; font-size: 2.2rem; color: #fff; margin-bottom: 10px;">ANDROID MOBILE APK</h3>
-                            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
-                                Direct installable APK for Android phones and tablets. Fully bundled with LLVM Clang 21 offline compiler, Dev-C++ console, quick coding touch symbols, and offline AI helper.
-                            </p>
-                            <ul style="list-style: none; padding: 0; margin-bottom: 25px; color: #ccc; font-size: 0.9rem;">
-                                <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-green); margin-right: 8px;"></i> Direct Install on Any Phone or Tablet</li>
-                                <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-green); margin-right: 8px;"></i> Complete LLVM Clang 21 Toolchain Bundled</li>
-                                <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color:var(--neon-green); margin-right: 8px;"></i> Works 100% Without WiFi or Data</li>
-                            </ul>
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 12px;">
-                            <a href="Anant-CPP-Studio-v1.0-release.apk" download="Anant-CPP-Studio-v1.0-release.apk" onclick="openIdeDownload('android-apk', event)" class="ide-download-btn glitch-hover" style="background: var(--neon-green); color: #000; box-shadow: 0 8px 25px rgba(0, 255, 102, 0.4);" onmouseover="this.style.background='#fff';" onmouseout="this.style.background='var(--neon-green)';">
-                                <i class="fas fa-mobile-alt"></i> DOWNLOAD ANDROID APK (63 MB)
-                            </a>
-                            <a href="https://play.google.com/store/apps/details?id=com.tanmay.anantcomlier" target="_blank" class="ide-download-btn glitch-hover" style="background: transparent; border: 1px solid #00ff66; color: #00ff66; display: block; text-align: center; text-decoration: none; padding: 12px; font-weight: bold; border-radius: 6px;">
-                                <i class="fab fa-google-play"></i> GET ON GOOGLE PLAY STORE
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- NEW: Public Downloads Section (For Users) -->
-        <section id="downloads">
-            <h2 class="section-title animate-up">Public <span>Resources</span></h2>
-            <p style="text-align:center; color:var(--text-muted); margin-bottom: 40px;">Files, PDFs, and assets shared by the Anant Krupa team.</p>
-            <div id="publicFileList">
-                <!-- Dynamically injected Public files -->
-            </div>
-        </section>
-
-        <!-- Games Section -->
-        <section id="games" style="padding-top: 50px; padding-bottom: 100px;">
-            <h2 class="section-title animate-up">FEATURED <span>TITLES</span></h2>
-            
-            <div class="games-grid">
-                <!-- Billionaire Game Card -->
-                <div class="game-card animate-up delay-1" onclick="window.open('https://play.google.com/store/apps/details?id=com.tanmay.billionaire', '_blank')">
-                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="Billionaire Game">
-                    <div class="info-overlay">
-                        <h3>BILLIONAIRE</h3>
-                        <p>Business Simulation</p>
-                    </div>
-                </div>
-
-                <!-- Hands of Cricket Game Card -->
-                <div class="game-card animate-up delay-2" onclick="window.open('https://play.google.com/store/apps/details?id=com.tanmay.handsofcricket', '_blank')">
-                    <img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=600&auto=format&fit=crop" alt="Hands of Cricket">
-                    <div class="info-overlay">
-                        <h3>HANDS OF CRICKET</h3>
-                        <p>Sports & Strategy</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer id="contact">
-            <div class="footer-logo glitch-hover">
-                <span class="brand-icon" style="width:25px; height:25px; margin-right:10px;"></span>
-                ANANT KRUPA
-            </div>
-            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto; font-weight: 600;">Crafting top-tier gaming experiences. Join our community and explore virtual worlds like never before.</p>
-            <div class="footer-socials">
-                <a href="#"><i class="fab fa-discord"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-youtube"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-            </div>
-            <p style="color: #4b5563; font-size: 0.9rem; margin-top: 20px; font-weight: 600;">&copy; 2026 Anant Krupa Game Studio. All rights reserved.</p>
-        </footer>
-    
-    </div> <!-- END OF MAIN WEBSITE CONTENT -->
-
-    <!-- --- SECURE ADMIN PHASE --- -->
-    <div id="adminPhase">
-        <div class="admin-header">
-            <h2>ADMIN <span>DASHBOARD</span></h2>
-            <button class="login-btn glitch-hover" onclick="exitAdminPhase()" style="border-color:#fff; color:#fff;">Exit Phase <i class="fas fa-sign-out-alt"></i></button>
-        </div>
-        
-        <div class="admin-grid">
-            <!-- Left Side: Controls (Only visible to Authorised Admins) -->
-            <div id="adminControlsPanel" style="display:none;">
-                <div class="admin-panel-box" style="margin-bottom: 20px; border-color: var(--primary);">
-                    <h3 style="font-family: 'Oswald'; margin-bottom: 10px; font-size: 2rem;"><i class="fas fa-cloud-upload-alt" style="color:var(--primary)"></i> Secure Uploads</h3>
-                    <p style="color:var(--text-muted); margin-bottom: 20px;">Welcome Authorised Admin! You can upload game assets, PDFs, or private photos to the server.</p>
-                    <button class="upload-trigger-btn glitch-hover" onclick="document.getElementById('uploadModal').style.display='flex'">UPLOAD NEW FILE</button>
                 </div>
                 
-                <!-- Super Admin Power: Add New Admins -->
-                <div class="admin-panel-box" style="border-color: #00ff66;">
-                    <h3 style="font-family: 'Oswald'; margin-bottom: 10px; font-size: 1.8rem;"><i class="fas fa-user-plus" style="color:#00ff66"></i> Grant Admin Access</h3>
-                    <p style="color:var(--text-muted); margin-bottom: 15px; font-size:0.9rem;">Make someone else an admin by entering their email.</p>
-                    <input type="email" id="newAdminEmail" placeholder="Enter Email to make Admin" style="width:100%; padding:12px; margin-bottom:10px; background:#000; color:#fff; border:1px solid #333; outline:none;">
-                    <button class="glitch-hover" onclick="addAdminAccess()" style="width:100%; padding:12px; background:#00ff66; color:#000; font-weight:bold; font-family:'Oswald'; font-size:1.2rem; border:none; cursor:pointer; transition:0.3s; box-shadow: 0 0 10px rgba(0,255,102,0.4);">GRANT ACCESS</button>
-                </div>
-            </div>
-            
-            <!-- Right Side: Database View (Visible to anyone who passes Anant@03 check) -->
-            <div class="admin-panel-box">
-                <h3 style="font-family: 'Oswald'; margin-bottom: 20px; font-size: 2rem;"><i class="fas fa-database" style="color:var(--primary)"></i> Admin Database Records</h3>
-                <p style="color:var(--text-muted); margin-bottom: 20px;">Files marked as 'Admin' or 'Both'.</p>
-                <div id="adminFileList" style="display: flex; flex-direction: column; gap: 10px;">
-                    <!-- Dynamically injected Admin files -->
+                <!-- Right Side: Database View (Visible to anyone who passes Anant@03 check) -->
+                <div class="admin-panel-box">
+                    <h3 style="font-family: 'Oswald'; margin-bottom: 20px; font-size: 2rem;"><i class="fas fa-database" style="color:var(--primary)"></i> Admin Database Records</h3>
+                    <p style="color:var(--text-muted); margin-bottom: 20px;">Files marked as 'Admin' or 'Both'.</p>
+                    <div id="adminFileList" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Dynamically injected Admin files -->
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Side Floating Video Player -->
-    <div class="floating-video-container" id="floatingVideo">
-        <button class="close-video-btn" onclick="closeFloatingVideo()"><i class="fas fa-times"></i></button>
-        <video autoplay muted loop playsinline>
-            <source src="https://cdn.pixabay.com/video/2020/05/25/40141-424754761_large.mp4" type="video/mp4">
-        </video>
-    </div>
+        <!-- Side Floating Video Player -->
+        <div class="floating-video-container" id="floatingVideo">
+            <button class="close-video-btn" onclick="closeFloatingVideo()"><i class="fas fa-times"></i></button>
+            <video autoplay muted loop playsinline>
+                <source src="https://cdn.pixabay.com/video/2020/05/25/40141-424754761_large.mp4" type="video/mp4">
+            </video>
+        </div>
 
-    <!-- Scripts (COMPLETELY UNTOUCHED, EXACTLY AS PROVIDED) -->
-    <script>
-        // --- Custom Cursor Logic (NEW) ---
-        const cursorDot = document.querySelector('.cursor-dot');
-        const cursorOutline = document.querySelector('.cursor-outline');
-        
-        window.addEventListener('mousemove', function(e) {
-            cursorDot.style.left = e.clientX + 'px';
-            cursorDot.style.top = e.clientY + 'px';
-            cursorOutline.style.left = e.clientX + 'px';
-            cursorOutline.style.top = e.clientY + 'px';
-        });
-        
-        // Hide on touch devices
-        if ('ontouchstart' in window) {
-            cursorDot.style.display = 'none';
-            cursorOutline.style.display = 'none';
-            document.body.style.cursor = 'auto';
-        }
-
-        // --- DATA LOGIC FOR LOCAL UPLOADS ---
-        const SUPER_ADMIN = "vanshtanmay9@gmail.com";
-        let approvedAdmins = JSON.parse(localStorage.getItem('anantAdminEmails')) || [SUPER_ADMIN];
-        let currentLoggedInEmail = null;
-
-        // Navbar Scroll Effect
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) nav.classList.add('scrolled');
-            else nav.classList.remove('scrolled');
-        });
-
-        // Mobile Menu Toggle
-        function toggleMenu() {
-            const navLinks = document.getElementById('navLinks');
-            const menuIcon = document.querySelector('.menu-toggle i');
-            navLinks.classList.toggle('active');
+        <!-- Scripts (COMPLETELY UNTOUCHED, EXACTLY AS PROVIDED) -->
+        <script>
+            // --- Custom Cursor Logic (NEW) ---
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
             
-            if(navLinks.classList.contains('active')) {
-                menuIcon.classList.remove('fa-bars');
-                menuIcon.classList.add('fa-times');
-            } else {
-                menuIcon.classList.remove('fa-times');
-                menuIcon.classList.add('fa-bars');
+            window.addEventListener('mousemove', function(e) {
+                cursorDot.style.left = e.clientX + 'px';
+                cursorDot.style.top = e.clientY + 'px';
+                cursorOutline.style.left = e.clientX + 'px';
+                cursorOutline.style.top = e.clientY + 'px';
+            });
+            
+            // Hide on touch devices
+            if ('ontouchstart' in window) {
+                cursorDot.style.display = 'none';
+                cursorOutline.style.display = 'none';
+                document.body.style.cursor = 'auto';
             }
-        }
 
-        // Close Floating Video
-        function closeFloatingVideo() {
-            const videoContainer = document.getElementById('floatingVideo');
-            videoContainer.style.transform = 'scale(0)';
-            setTimeout(() => { videoContainer.style.display = 'none'; }, 400);
-        }
+            // --- DATA LOGIC FOR LOCAL UPLOADS ---
+            const SUPER_ADMIN = "vanshtanmay9@gmail.com";
+            let approvedAdmins = JSON.parse(localStorage.getItem('anantAdminEmails')) || [SUPER_ADMIN];
+            let currentLoggedInEmail = null;
 
-        // Counter Animation for Stats
-        const counters = document.querySelectorAll('.counter');
-        const speed = 50; 
-        const animateCounters = () => {
-            counters.forEach(counter => {
-                const target = +counter.getAttribute('data-target');
-                const count = +counter.innerText;
-                const inc = target / speed;
-                if (count < target) {
-                    counter.innerText = Math.ceil(count + inc);
-                    setTimeout(animateCounters, 40);
+            // Navbar Scroll Effect
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                if (window.scrollY > 50) nav.classList.add('scrolled');
+                else nav.classList.remove('scrolled');
+            });
+
+            // Mobile Menu Toggle
+            function toggleMenu() {
+                const navLinks = document.getElementById('navLinks');
+                const menuIcon = document.querySelector('.menu-toggle i');
+                navLinks.classList.toggle('active');
+                
+                if(navLinks.classList.contains('active')) {
+                    menuIcon.classList.remove('fa-bars');
+                    menuIcon.classList.add('fa-times');
                 } else {
-                    counter.innerText = target;
+                    menuIcon.classList.remove('fa-times');
+                    menuIcon.classList.add('fa-bars');
                 }
+            }
+
+            // Close Floating Video
+            function closeFloatingVideo() {
+                const videoContainer = document.getElementById('floatingVideo');
+                videoContainer.style.transform = 'scale(0)';
+                setTimeout(() => { videoContainer.style.display = 'none'; }, 400);
+            }
+
+            // Counter Animation for Stats
+            const counters = document.querySelectorAll('.counter');
+            const speed = 50; 
+            const animateCounters = () => {
+                counters.forEach(counter => {
+                    const target = +counter.getAttribute('data-target');
+                    const count = +counter.innerText;
+                    const inc = target / speed;
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + inc);
+                        setTimeout(animateCounters, 40);
+                    } else {
+                        counter.innerText = target;
+                    }
+                });
+            }
+            let observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { animateCounters(); observer.unobserve(entry.target); }
+                });
+            }, { threshold: 0.5 });
+            document.querySelector('.stats-section').querySelectorAll('.counter').forEach(c => observer.observe(c));
+
+            const animateElements = document.querySelectorAll('.animate-up');
+            const scrollObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if(entry.isIntersecting) entry.target.style.animationPlayState = 'running'; })
             });
-        }
-        let observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) { animateCounters(); observer.unobserve(entry.target); }
-            });
-        }, { threshold: 0.5 });
-        document.querySelector('.stats-section').querySelectorAll('.counter').forEach(c => observer.observe(c));
+            animateElements.forEach(el => { el.style.animationPlayState = 'paused'; scrollObserver.observe(el); });
 
-        const animateElements = document.querySelectorAll('.animate-up');
-        const scrollObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if(entry.isIntersecting) entry.target.style.animationPlayState = 'running'; })
-        });
-        animateElements.forEach(el => { el.style.animationPlayState = 'paused'; scrollObserver.observe(el); });
+            // --- Firebase Logic ---
+            const firebaseConfig = {
+                apiKey: "AIzaSyDoGy8SUrEDJ9ody4p7YA-_1nABssJcCbs",
+                authDomain: "anantweb-12da0.firebaseapp.com",
+                projectId: "anantweb-12da0",
+                storageBucket: "anantweb-12da0.firebasestorage.app",
+                messagingSenderId: "636221130786",
+                appId: "1:636221130786:web:2cdf8cb379c9a4ea7e627b",
+                measurementId: "G-J6ZBCM4VGF"
+            };
 
-        // --- Firebase Logic ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDoGy8SUrEDJ9ody4p7YA-_1nABssJcCbs",
-            authDomain: "anantweb-12da0.firebaseapp.com",
-            projectId: "anantweb-12da0",
-            storageBucket: "anantweb-12da0.firebasestorage.app",
-            messagingSenderId: "636221130786",
-            appId: "1:636221130786:web:2cdf8cb379c9a4ea7e627b",
-            measurementId: "G-J6ZBCM4VGF"
-        };
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
+            const db = firebase.firestore();
+            const storage = firebase.storage();
 
-        const db = firebase.firestore();
-        const storage = firebase.storage();
+            let isLoginMode = true;
 
-        let isLoginMode = true;
-
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('authTitle').innerText = isLoginMode ? "SIGN IN" : "SIGN UP";
-            document.querySelector('.switch-auth').innerHTML = isLoginMode ? "Don't have an account? <span>Sign Up</span>" : "Already have an account? <span>Sign In</span>";
-        }
-
-       function handleAuth() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorDisplay = document.getElementById('authError');
-            errorDisplay.innerText = "";
-            errorDisplay.style.color = "#ff4a00"; 
-
-            if (!email || !password) {
-                errorDisplay.innerText = "Email ane Password banne nakhva jaruri che!";
-                return;
+            function toggleAuthMode() {
+                isLoginMode = !isLoginMode;
+                document.getElementById('authTitle').innerText = isLoginMode ? "SIGN IN" : "SIGN UP";
+                document.querySelector('.switch-auth').innerHTML = isLoginMode ? "Don't have an account? <span>Sign Up</span>" : "Already have an account? <span>Sign In</span>";
             }
 
-            if(isLoginMode) {
-                auth.signInWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        alert("Login Successful! Welcome to Anant Krupa.");
-                        document.getElementById('loginModal').style.display = 'none';
-                        document.getElementById('email').value = ""; document.getElementById('password').value = "";
-                    })
-                    .catch((error) => { 
-                        if (error.code === 'auth/wrong-password') errorDisplay.innerText = "Your Pass Was Wrong.";
-                        else if (error.code === 'auth/user-not-found') errorDisplay.innerText = "❌ This Email is not registred, please sign-up.";
-                        else if (error.code === 'auth/invalid-credential') errorDisplay.innerText = "❌ Your email or pass was wrong";
-                        else if (error.code === 'auth/invalid-email') errorDisplay.innerText = "❌ Email's id format was wrong";
-                        else errorDisplay.innerText = "❌ " + error.message;
-                    });
-            } else {
-                auth.createUserWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        alert("Account Created Successfully! You are come Anant World");
-                        document.getElementById('loginModal').style.display = 'none';
-                        document.getElementById('email').value = ""; document.getElementById('password').value = "";
-                    })
-                    .catch((error) => { 
-                        if (error.code === 'auth/email-already-in-use') errorDisplay.innerText = "⚠️ This email id have alredy account, please try another account";
-                        else if (error.code === 'auth/weak-password') errorDisplay.innerText = "⚠️ Password make strong(Minimum 6 latter).";
-                        else errorDisplay.innerText = "⚠️ " + error.message;
-                    });
-            }
-        }   
+        function handleAuth() {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const errorDisplay = document.getElementById('authError');
+                errorDisplay.innerText = "";
+                errorDisplay.style.color = "#ff4a00"; 
 
-        auth.onAuthStateChanged((user) => {
-            const loginBtn = document.getElementById('navLoginBtn');
-            if (user) {
-                currentLoggedInEmail = user.email;
-                loginBtn.innerText = "LOGOUT";
-                loginBtn.onclick = () => { auth.signOut(); exitAdminPhase(); }
-            } else {
-                currentLoggedInEmail = null;
-                loginBtn.innerText = "LOGIN";
-                loginBtn.onclick = () => document.getElementById('loginModal').style.display='flex';
-                exitAdminPhase();
-            }
-            checkAdminPrivileges();
-        });
+                if (!email || !password) {
+                    errorDisplay.innerText = "Email ane Password banne nakhva jaruri che!";
+                    return;
+                }
 
-        function signInWithGoogle() {
-            const errorDisplay = document.getElementById('authError');
-            errorDisplay.innerText = ""; 
-            auth.signInWithPopup(googleProvider)
-                .then((result) => {
-                    alert("Welcome to Anant Krupa, " + result.user.displayName + "!");
-                    document.getElementById('loginModal').style.display = 'none';
-                })
-                .catch((error) => { errorDisplay.innerText = "❌ Google Login Failed: " + error.message; });
-        }
+                if(isLoginMode) {
+                    auth.signInWithEmailAndPassword(email, password)
+                        .then((userCredential) => {
+                            alert("Login Successful! Welcome to Anant Krupa.");
+                            document.getElementById('loginModal').style.display = 'none';
+                            document.getElementById('email').value = ""; document.getElementById('password').value = "";
+                        })
+                        .catch((error) => { 
+                            if (error.code === 'auth/wrong-password') errorDisplay.innerText = "Your Pass Was Wrong.";
+                            else if (error.code === 'auth/user-not-found') errorDisplay.innerText = "❌ This Email is not registred, please sign-up.";
+                            else if (error.code === 'auth/invalid-credential') errorDisplay.innerText = "❌ Your email or pass was wrong";
+                            else if (error.code === 'auth/invalid-email') errorDisplay.innerText = "❌ Email's id format was wrong";
+                            else errorDisplay.innerText = "❌ " + error.message;
+                        });
+                } else {
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .then((userCredential) => {
+                            alert("Account Created Successfully! You are come Anant World");
+                            document.getElementById('loginModal').style.display = 'none';
+                            document.getElementById('email').value = ""; document.getElementById('password').value = "";
+                        })
+                        .catch((error) => { 
+                            if (error.code === 'auth/email-already-in-use') errorDisplay.innerText = "⚠️ This email id have alredy account, please try another account";
+                            else if (error.code === 'auth/weak-password') errorDisplay.innerText = "⚠️ Password make strong(Minimum 6 latter).";
+                            else errorDisplay.innerText = "⚠️ " + error.message;
+                        });
+                }
+            }   
 
-        // --- ADMIN PHASE LOGIC ---
-        function enterAdminPhase() {
-            let userPasskey = prompt("Are you Admin? Enter Passkey:");
-            if (userPasskey === "Anant@03") {
-                document.getElementById('mainWebsiteContent').style.display = 'none';
-                document.getElementById('adminPhase').style.display = 'block';
-                document.getElementById('navLinks').classList.remove('active');
-                document.querySelector('.menu-toggle i').classList.replace('fa-times', 'fa-bars');
+            auth.onAuthStateChanged((user) => {
+                const loginBtn = document.getElementById('navLoginBtn');
+                if (user) {
+                    currentLoggedInEmail = user.email;
+                    loginBtn.innerText = "LOGOUT";
+                    loginBtn.onclick = () => { auth.signOut(); exitAdminPhase(); }
+                } else {
+                    currentLoggedInEmail = null;
+                    loginBtn.innerText = "LOGIN";
+                    loginBtn.onclick = () => document.getElementById('loginModal').style.display='flex';
+                    exitAdminPhase();
+                }
                 checkAdminPrivileges();
-                renderFiles();
-            } else if (userPasskey !== null) { 
-                alert("❌ Wrong Passkey! Access Denied.");
+            });
+
+            function signInWithGoogle() {
+                const errorDisplay = document.getElementById('authError');
+                errorDisplay.innerText = ""; 
+                auth.signInWithPopup(googleProvider)
+                    .then((result) => {
+                        alert("Welcome to Anant Krupa, " + result.user.displayName + "!");
+                        document.getElementById('loginModal').style.display = 'none';
+                    })
+                    .catch((error) => { errorDisplay.innerText = "❌ Google Login Failed: " + error.message; });
             }
-        }
 
-        function exitAdminPhase() {
-            document.getElementById('mainWebsiteContent').style.display = 'block';
-            document.getElementById('adminPhase').style.display = 'none';
-        }
-
-        // Check if logged in user has upload rights
-        function checkAdminPrivileges() {
-            if (currentLoggedInEmail && approvedAdmins.includes(currentLoggedInEmail)) {
-                document.getElementById('adminControlsPanel').style.display = 'block';
-            } else {
-                document.getElementById('adminControlsPanel').style.display = 'none';
+            // તારા જૂના enterAdminPhase ફંક્શનમાં ખાલી એક લાઈન એડ કરવાની છે:
+            function enterAdminPhase() {
+                let userPasskey = prompt("Are you Admin? Enter Passkey:");
+                if (userPasskey === "Anant@03") {
+                    document.getElementById('mainWebsiteContent').style.display = 'none';
+                    document.getElementById('adminPhase').style.display = 'block';
+                    document.getElementById('navLinks').classList.remove('active');
+                    document.querySelector('.menu-toggle i').classList.replace('fa-times', 'fa-bars');
+                    checkAdminPrivileges();
+                    if(typeof renderFiles === 'function') renderFiles();
+                    
+                    // બસ આ એક લાઈન અહિયાં એડ કરી દે:
+                    startFetchingStats(); 
+                    
+                } else if (userPasskey !== null) { 
+                    alert("❌ Wrong Passkey! Access Denied.");
+                }
             }
-        }
 
-        function addAdminAccess() {
-            let newEmail = document.getElementById('newAdminEmail').value.trim();
-            if(!newEmail) return alert("Please enter an email id!");
+            function exitAdminPhase() {
+                document.getElementById('mainWebsiteContent').style.display = 'block';
+                document.getElementById('adminPhase').style.display = 'none';
+            }
+
+            // Check if logged in user has upload rights
+            function checkAdminPrivileges() {
+                if (currentLoggedInEmail && approvedAdmins.includes(currentLoggedInEmail)) {
+                    document.getElementById('adminControlsPanel').style.display = 'block';
+                } else {
+                    document.getElementById('adminControlsPanel').style.display = 'none';
+                }
+            }
+
+            function addAdminAccess() {
+                let newEmail = document.getElementById('newAdminEmail').value.trim();
+                if(!newEmail) return alert("Please enter an email id!");
+                
+                if(!approvedAdmins.includes(newEmail)) {
+                    approvedAdmins.push(newEmail);
+                    localStorage.setItem('anantAdminEmails', JSON.stringify(approvedAdmins));
+                    alert("✅ Success! " + newEmail + " can now upload files as an Admin.");
+                    document.getElementById('newAdminEmail').value = "";
+                } else {
+                    alert("This user is already an Admin.");
+                }
+            }
             
-            if(!approvedAdmins.includes(newEmail)) {
-                approvedAdmins.push(newEmail);
-                localStorage.setItem('anantAdminEmails', JSON.stringify(approvedAdmins));
-                alert("✅ Success! " + newEmail + " can now upload files as an Admin.");
-                document.getElementById('newAdminEmail').value = "";
-            } else {
-                alert("This user is already an Admin.");
+            // This old function remains to not break anything locally, but async one below takes over
+            function submitUploadLocal() {
+                let fileInput = document.getElementById('adminFile');
+                let audience = document.getElementById('uploadAudience').value;
+                
+                if(fileInput.files.length === 0) {
+                    alert("Please select a file first!");
+                    return;
+                }
+                
+                let fileName = fileInput.files[0].name;
+                let fileData = {
+                    name: fileName,
+                    audience: audience,
+                    date: new Date().toLocaleDateString()
+                };
+                
+                uploadedFiles.push(fileData);
+                localStorage.setItem('anantUploadedFiles', JSON.stringify(uploadedFiles));
+                
+                alert(`✅ Success! [${fileName}] uploaded successfully for: [${audience.toUpperCase()}]`);
+                document.getElementById('uploadModal').style.display = 'none';
+                fileInput.value = ""; // reset input
+                renderFiles();
             }
+
+            // Firestore માંથી રિયલ-ટાઈમ ડેટા લાવવા
+    db.collection('uploadedFiles').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+        let publicList = document.getElementById('publicFileList');
+        let adminList = document.getElementById('adminFileList');
+        
+        publicList.innerHTML = "";
+        adminList.innerHTML = "";
+        
+        if (snapshot.empty) {
+            publicList.innerHTML = "<p style='color:var(--text-muted); text-align:center; width:100%;'>No public files uploaded yet.</p>";
+            adminList.innerHTML = "<p style='color:var(--text-muted);'>No admin files available.</p>";
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            let f = doc.data();
+            let badgeColor = f.audience === 'admin' ? '#ff4a00' : (f.audience === 'users' ? '#00ff66' : '#fff');
+            
+            // ફાઈલ કાર્ડ (આમાં <a> ટેગ વાપર્યો છે એટલે ક્લિક કરવાથી ફાઈલ ખૂલી જશે/ડાઉનલોડ થશે)
+            let fileHTML = `
+                <a href="${f.fileUrl}" target="_blank" class="file-card glitch-hover" style="width: ${f.audience==='admin' || f.audience==='both' ? '100%' : '300px'}; border-left-color: ${badgeColor}; text-decoration: none;">
+                    <i class="fas ${f.name.includes('.pdf') ? 'fa-file-pdf' : 'fa-image'}" style="font-size: 2rem; color: ${badgeColor};"></i>
+                    <div>
+                        <h4 style="color:#fff; font-size:1.1rem; margin-bottom:5px; font-family:'Oswald';">${f.name}</h4>
+                        <p style="color:var(--text-muted); font-size:0.8rem; font-weight:bold;">ACCESS: ${f.audience.toUpperCase()} | DATE: ${f.date}</p>
+                    </div>
+                </a>
+            `;
+            
+            // જો 'users' કે 'both' હોય તો Public માં બતાવો
+            if(f.audience === 'users' || f.audience === 'both') publicList.innerHTML += fileHTML;
+            
+            // જો 'admin' કે 'both' હોય તો Admin ડેશબોર્ડમાં બતાવો
+            if(f.audience === 'admin' || f.audience === 'both') adminList.innerHTML += fileHTML;
+        });
+    });
+
+            // Initialize file rendering on page load
+            if(typeof renderFiles === 'function') renderFiles();
+            
+            async function submitUpload() {
+        let fileInput = document.getElementById('adminFile');
+        let audience = document.getElementById('uploadAudience').value;
+        let uploadBtn = document.querySelector('#uploadModal .auth-btn'); // બટન પકડવા
+        
+        if(fileInput.files.length === 0) {
+            alert("Please select a file first!");
+            return;
         }
         
-        // This old function remains to not break anything locally, but async one below takes over
-        function submitUploadLocal() {
-            let fileInput = document.getElementById('adminFile');
-            let audience = document.getElementById('uploadAudience').value;
+        let file = fileInput.files[0];
+        let fileName = file.name;
+        
+        try {
+            // અપલોડ થાય ત્યાં સુધી બટન પર UPLOADING લખાઈ જશે
+            uploadBtn.innerText = "UPLOADING... PLEASE WAIT";
+            uploadBtn.disabled = true;
+
+            // 1. Firebase Storage માં ફાઈલ અપલોડ કરો
+            let storageRef = storage.ref('anant_uploads/' + Date.now() + '_' + fileName);
+            let snapshot = await storageRef.put(file);
             
-            if(fileInput.files.length === 0) {
-                alert("Please select a file first!");
-                return;
-            }
-            
-            let fileName = fileInput.files[0].name;
-            let fileData = {
+            // 2. અપલોડ થયેલી ફાઈલની ડાઉનલોડ લિંક મેળવો
+            let downloadURL = await snapshot.ref.getDownloadURL();
+
+            // 3. Firestore Database માં ફાઈલની માહિતી સેવ કરો
+            await db.collection('uploadedFiles').add({
                 name: fileName,
                 audience: audience,
-                date: new Date().toLocaleDateString()
-            };
-            
-            uploadedFiles.push(fileData);
-            localStorage.setItem('anantUploadedFiles', JSON.stringify(uploadedFiles));
-            
+                date: new Date().toLocaleDateString(),
+                fileUrl: downloadURL, // ફાઈલની લિંક
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() // શોર્ટિંગ માટે ટાઈમ
+            });
+
             alert(`✅ Success! [${fileName}] uploaded successfully for: [${audience.toUpperCase()}]`);
             document.getElementById('uploadModal').style.display = 'none';
-            fileInput.value = ""; // reset input
-            renderFiles();
+            fileInput.value = ""; // ઈનપુટ ખાલી કરવા
+        } catch (error) {
+            console.error("Upload Error: ", error);
+            alert("❌ Upload Failed: " + error.message);
+        } finally {
+            uploadBtn.innerText = "Upload File"; // બટન પાછું નોર્મલ
+            uploadBtn.disabled = false;
         }
-
-        // Firestore માંથી રિયલ-ટાઈમ ડેટા લાવવા
-db.collection('uploadedFiles').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
-    let publicList = document.getElementById('publicFileList');
-    let adminList = document.getElementById('adminFileList');
-    
-    publicList.innerHTML = "";
-    adminList.innerHTML = "";
-    
-    if (snapshot.empty) {
-        publicList.innerHTML = "<p style='color:var(--text-muted); text-align:center; width:100%;'>No public files uploaded yet.</p>";
-        adminList.innerHTML = "<p style='color:var(--text-muted);'>No admin files available.</p>";
-        return;
     }
+            // --- ડાઉનલોડ હેન્ડલ કરવાનું અપડેટેડ ફંક્શન ---
+            async function handleIDE_Download(fileUrl) {
+                if (!currentLoggedInEmail) {
+                    alert("લ્યા પેલા લોગીન તો કર! (Please Login to Download)");
+                    document.getElementById('loginModal').style.display = 'flex';
+                    return; 
+                }
 
-    snapshot.forEach((doc) => {
-        let f = doc.data();
-        let badgeColor = f.audience === 'admin' ? '#ff4a00' : (f.audience === 'users' ? '#00ff66' : '#fff');
-        
-        // ફાઈલ કાર્ડ (આમાં <a> ટેગ વાપર્યો છે એટલે ક્લિક કરવાથી ફાઈલ ખૂલી જશે/ડાઉનલોડ થશે)
-        let fileHTML = `
-            <a href="${f.fileUrl}" target="_blank" class="file-card glitch-hover" style="width: ${f.audience==='admin' || f.audience==='both' ? '100%' : '300px'}; border-left-color: ${badgeColor}; text-decoration: none;">
-                <i class="fas ${f.name.includes('.pdf') ? 'fa-file-pdf' : 'fa-image'}" style="font-size: 2rem; color: ${badgeColor};"></i>
-                <div>
-                    <h4 style="color:#fff; font-size:1.1rem; margin-bottom:5px; font-family:'Oswald';">${f.name}</h4>
-                    <p style="color:var(--text-muted); font-size:0.8rem; font-weight:bold;">ACCESS: ${f.audience.toUpperCase()} | DATE: ${f.date}</p>
-                </div>
-            </a>
-        `;
-        
-        // જો 'users' કે 'both' હોય તો Public માં બતાવો
-        if(f.audience === 'users' || f.audience === 'both') publicList.innerHTML += fileHTML;
-        
-        // જો 'admin' કે 'both' હોય તો Admin ડેશબોર્ડમાં બતાવો
-        if(f.audience === 'admin' || f.audience === 'both') adminList.innerHTML += fileHTML;
-    });
-});
-
-        // Initialize file rendering on page load
-        if(typeof renderFiles === 'function') renderFiles();
-        
-        async function submitUpload() {
-    let fileInput = document.getElementById('adminFile');
-    let audience = document.getElementById('uploadAudience').value;
-    let uploadBtn = document.querySelector('#uploadModal .auth-btn'); // બટન પકડવા
-    
-    if(fileInput.files.length === 0) {
-        alert("Please select a file first!");
-        return;
-    }
-    
-    let file = fileInput.files[0];
-    let fileName = file.name;
-    
-    try {
-        // અપલોડ થાય ત્યાં સુધી બટન પર UPLOADING લખાઈ જશે
-        uploadBtn.innerText = "UPLOADING... PLEASE WAIT";
-        uploadBtn.disabled = true;
-
-        // 1. Firebase Storage માં ફાઈલ અપલોડ કરો
-        let storageRef = storage.ref('anant_uploads/' + Date.now() + '_' + fileName);
-        let snapshot = await storageRef.put(file);
-        
-        // 2. અપલોડ થયેલી ફાઈલની ડાઉનલોડ લિંક મેળવો
-        let downloadURL = await snapshot.ref.getDownloadURL();
-
-        // 3. Firestore Database માં ફાઈલની માહિતી સેવ કરો
-        await db.collection('uploadedFiles').add({
-            name: fileName,
-            audience: audience,
-            date: new Date().toLocaleDateString(),
-            fileUrl: downloadURL, // ફાઈલની લિંક
-            timestamp: firebase.firestore.FieldValue.serverTimestamp() // શોર્ટિંગ માટે ટાઈમ
-        });
-
-        alert(`✅ Success! [${fileName}] uploaded successfully for: [${audience.toUpperCase()}]`);
-        document.getElementById('uploadModal').style.display = 'none';
-        fileInput.value = ""; // ઈનપુટ ખાલી કરવા
-    } catch (error) {
-        console.error("Upload Error: ", error);
-        alert("❌ Upload Failed: " + error.message);
-    } finally {
-        uploadBtn.innerText = "Upload File";
-        uploadBtn.disabled = false;
-    }
-}
-
-        // --- ANANT C++ STUDIO DOWNLOAD CENTER LOGIC (FOR VERCEL & CLOUD DEPLOYMENTS) ---
-        const IDE_CLOUD_DOWNLOADS = {
-            windowsExe: "Anant-CPP-Studio-Setup-v1.0.exe",
-            windowsZip: "Anant-CPP-Studio-Windows-Setup-v1.0.zip",
-            androidApk: "Anant-CPP-Studio-v1.0-release.apk",
-            playStore: "https://play.google.com/store/apps/details?id=com.tanmay.anantcomlier"
-        };
-
-        function openIdeDownload(type, e) {
-            if (e) e.preventDefault();
-            const modal = document.getElementById('ideDownloadModal');
-            const icon = document.getElementById('ideModalIcon');
-            const title = document.getElementById('ideModalTitle');
-            const badge = document.getElementById('ideModalBadge');
-            const desc = document.getElementById('ideModalDesc');
-            const file = document.getElementById('ideModalFile');
-            const size = document.getElementById('ideModalSize');
-            const primaryBtn = document.getElementById('idePrimaryDownloadBtn');
-            const mirrorBtn = document.getElementById('ideMirrorDownloadBtn');
-            const playStoreBtn = document.getElementById('idePlayStoreBtn');
-
-            if (type === 'windows-exe') {
-                icon.className = 'fab fa-windows';
-                icon.style.color = 'var(--neon-blue)';
-                title.textContent = 'WINDOWS LAPTOP INSTALLER';
-                badge.textContent = 'Version 1.0.1 • 1-Click Setup';
-                desc.textContent = 'Includes MinGW-w64 GCC/G++, Dev-C++ execution window, interactive scanf/cin, and auto Desktop + Start Menu shortcuts.';
-                file.textContent = 'Anant-CPP-Studio-Setup-v1.0.exe';
-                size.textContent = '112 MB';
-                primaryBtn.href = IDE_CLOUD_DOWNLOADS.windowsExe;
-                primaryBtn.setAttribute('download', 'Anant-CPP-Studio-Setup-v1.0.exe');
-                primaryBtn.style.background = 'var(--neon-blue)';
-                mirrorBtn.href = IDE_CLOUD_DOWNLOADS.windowsExe;
-                mirrorBtn.style.display = 'flex';
-                playStoreBtn.style.display = 'none';
-            } else if (type === 'windows-zip') {
-                icon.className = 'fas fa-file-archive';
-                icon.style.color = 'var(--neon-blue)';
-                title.textContent = 'WINDOWS PORTABLE ZIP';
-                badge.textContent = 'Version 1.0.1 • Standalone Portable';
-                desc.textContent = 'Portable zero-install package. Extract anywhere and launch immediately.';
-                file.textContent = 'Anant-CPP-Studio-Windows-Setup-v1.0.zip';
-                size.textContent = '149 MB';
-                primaryBtn.href = IDE_CLOUD_DOWNLOADS.windowsZip;
-                primaryBtn.setAttribute('download', 'Anant-CPP-Studio-Windows-Setup-v1.0.zip');
-                primaryBtn.style.background = 'var(--neon-blue)';
-                mirrorBtn.href = IDE_CLOUD_DOWNLOADS.windowsZip;
-                mirrorBtn.style.display = 'flex';
-                playStoreBtn.style.display = 'none';
-            } else if (type === 'android-apk') {
-                icon.className = 'fab fa-android';
-                icon.style.color = 'var(--neon-green)';
-                title.textContent = 'ANDROID COMPILER APK';
-                badge.textContent = 'Version Code 5 (v1.0) • ARM64 Clang';
-                desc.textContent = 'Self-contained Android C/C++ compiler with Clang 21, Dev-C++ execution window, and offline AI code assistant.';
-                file.textContent = 'Anant-CPP-Studio-v1.0-release.apk';
-                size.textContent = '63 MB';
-                primaryBtn.href = IDE_CLOUD_DOWNLOADS.androidApk;
-                primaryBtn.setAttribute('download', 'Anant-CPP-Studio-v1.0-release.apk');
-                primaryBtn.style.background = 'var(--neon-green)';
-                mirrorBtn.href = IDE_CLOUD_DOWNLOADS.androidApk;
-                mirrorBtn.style.display = 'flex';
-                playStoreBtn.style.display = 'flex';
+                try {
+                    // ૧. કાઉન્ટ વધારવાનું લોજીક 
+                    let statsRef = db.collection('adminOnlyStats').doc('downloads');
+                    await statsRef.set({
+                        laptopIDE: firebase.firestore.FieldValue.increment(1)
+                    }, { merge: true });
+                    
+                    // ૨. નવું લોજીક: કયા યુઝરે ડાઉનલોડ કર્યું તેનો રેકોર્ડ સેવ કરવો
+                    await db.collection('downloadLogs').add({
+                        email: currentLoggedInEmail,
+                        fileDownloaded: "C++ IDE (Windows)",
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        date: new Date().toLocaleString() // તારીખ અને સમય સેવ કરવા
+                    });
+                    
+                    // ૩. ડાઉનલોડ લિંક ખોલો
+                    window.open(fileUrl, '_blank');
+                } catch (error) {
+                    console.error("Tracking Error: ", error);
+                    window.open(fileUrl, '_blank'); 
+                }
             }
 
-            modal.style.display = 'flex';
+            // --- Admin Panel માં કાઉન્ટ અને યુઝર લિસ્ટ લાવવા ---
+            function startFetchingStats() {
+                // ૧. કાઉન્ટ લાવવાનું લોજીક
+                db.collection('adminOnlyStats').doc('downloads').onSnapshot((doc) => {
+                    if (doc.exists) {
+                        document.getElementById('laptopDownloadCount').innerText = doc.data().laptopIDE || 0;
+                    }
+                });
 
-            // Attempt direct download immediately
-            try {
-                const tempLink = document.createElement('a');
-                tempLink.href = primaryBtn.href;
-                tempLink.setAttribute('download', file.textContent);
-                document.body.appendChild(tempLink);
-                tempLink.click();
-                document.body.removeChild(tempLink);
-            } catch(err) {
-                console.log('Direct download started in modal.');
-            }
-        }
+                // ૨. નવું લોજીક: ડાઉનલોડ કરનાર યુઝર્સનું લિસ્ટ લાવવું (નવીનતમ પહેલા દેખાશે)
+                db.collection('downloadLogs').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+                    let listDiv = document.getElementById('userDownloadList');
+                    listDiv.innerHTML = ""; 
+                    
+                    if (snapshot.empty) {
+                        listDiv.innerHTML = "<p style='color:#8b8b99; text-align:center;'>હજુ કોઈએ ડાઉનલોડ કર્યું નથી.</p>";
+                        return;
+                    }
 
-        function closeIdeDownloadModal() {
-            document.getElementById('ideDownloadModal').style.display = 'none';
-        }
-    </script>
-</body>
-</html>
+                    snapshot.forEach((doc) => {
+                        let data = doc.data();
+                        listDiv.innerHTML += `
+                            <div style="border-bottom: 1px solid #333; padding: 8px 0; color: #fff; font-size: 0.95rem;">
+                                <i class="fas fa-user-circle" style="color: #ff00ff; margin-right: 8px;"></i> 
+                                <span style="color: #fff; font-weight: 600;">${data.email}</span> 
+                                <span style="color: #8b8b99; font-size: 0.8rem; float: right; margin-top: 2px;">${data.date}</span>
+                            </div>
+                        `;
+                    });
+                });
+            }  
+        </script>
+    </body>
+    </html>
