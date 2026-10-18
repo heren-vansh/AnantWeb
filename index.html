@@ -723,11 +723,11 @@
                         <h3 style="font-family: 'Oswald'; margin-bottom: 10px; font-size: 1.8rem;">
                             <i class="fas fa-users" style="color:#ff00ff"></i> Download History
                         </h3>
-                        <p style="color:var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">કયા યુઝરે ફાઈલ ડાઉનલોડ કરી તેનું લિસ્ટ:</p>
+                        <p style="color:var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">List of users who downloaded the files:</p>
                         
-                        <!-- અહી લિસ્ટ દેખાશે, જો લિસ્ટ મોટું થાય તો જાતે જ સ્ક્રોલ આવી જશે -->
+                        <!-- User download history list -->
                         <div id="userDownloadList" style="max-height: 250px; overflow-y: auto; background: #000; padding: 10px; border: 1px solid #333; border-radius: 5px;">
-                            <!-- ડેટા જાવાસ્ક્રિપ્ટ થી આવશે -->
+                            <!-- Populated via JavaScript -->
                         </div>
                     </div>
                     
@@ -935,7 +935,7 @@
                     .catch((error) => { errorDisplay.innerText = "❌ Google Login Failed: " + error.message; });
             }
 
-            // તારા જૂના enterAdminPhase ફંક્શનમાં ખાલી એક લાઈન એડ કરવાની છે:
+            // Admin Phase Entry Handler
             function enterAdminPhase() {
                 let userPasskey = prompt("Are you Admin? Enter Passkey:");
                 if (userPasskey === "Anant@03") {
@@ -946,7 +946,7 @@
                     checkAdminPrivileges();
                     if(typeof renderFiles === 'function') renderFiles();
                     
-                    // બસ આ એક લાઈન અહિયાં એડ કરી દે:
+                    // Start fetching real-time download stats
                     startFetchingStats(); 
                     
                 } else if (userPasskey !== null) { 
@@ -1008,7 +1008,7 @@
                 renderFiles();
             }
 
-            // Firestore માંથી રિયલ-ટાઈમ ડેટા લાવવા
+            // Fetch real-time data from Firestore
     db.collection('uploadedFiles').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
         let publicList = document.getElementById('publicFileList');
         let adminList = document.getElementById('adminFileList');
@@ -1026,7 +1026,7 @@
             let f = doc.data();
             let badgeColor = f.audience === 'admin' ? '#ff4a00' : (f.audience === 'users' ? '#00ff66' : '#fff');
             
-            // ફાઈલ કાર્ડ (આમાં <a> ટેગ વાપર્યો છે એટલે ક્લિક કરવાથી ફાઈલ ખૂલી જશે/ડાઉનલોડ થશે)
+            // File card item for download and preview
             let fileHTML = `
                 <a href="${f.fileUrl}" target="_blank" class="file-card glitch-hover" style="width: ${f.audience==='admin' || f.audience==='both' ? '100%' : '300px'}; border-left-color: ${badgeColor}; text-decoration: none;">
                     <i class="fas ${f.name.includes('.pdf') ? 'fa-file-pdf' : 'fa-image'}" style="font-size: 2rem; color: ${badgeColor};"></i>
@@ -1037,10 +1037,10 @@
                 </a>
             `;
             
-            // જો 'users' કે 'both' હોય તો Public માં બતાવો
+            // Show in Public list if audience is users or both
             if(f.audience === 'users' || f.audience === 'both') publicList.innerHTML += fileHTML;
             
-            // જો 'admin' કે 'both' હોય તો Admin ડેશબોર્ડમાં બતાવો
+            // Show in Admin list if audience is admin or both
             if(f.audience === 'admin' || f.audience === 'both') adminList.innerHTML += fileHTML;
         });
     });
@@ -1051,7 +1051,7 @@
             async function submitUpload() {
         let fileInput = document.getElementById('adminFile');
         let audience = document.getElementById('uploadAudience').value;
-        let uploadBtn = document.querySelector('#uploadModal .auth-btn'); // બટન પકડવા
+        let uploadBtn = document.querySelector('#uploadModal .auth-btn'); // Upload button reference
         
         if(fileInput.files.length === 0) {
             alert("Please select a file first!");
@@ -1062,61 +1062,61 @@
         let fileName = file.name;
         
         try {
-            // અપલોડ થાય ત્યાં સુધી બટન પર UPLOADING લખાઈ જશે
+            // Update button label during upload
             uploadBtn.innerText = "UPLOADING... PLEASE WAIT";
             uploadBtn.disabled = true;
 
-            // 1. Firebase Storage માં ફાઈલ અપલોડ કરો
+            // 1. Upload file to Firebase Storage
             let storageRef = storage.ref('anant_uploads/' + Date.now() + '_' + fileName);
             let snapshot = await storageRef.put(file);
             
-            // 2. અપલોડ થયેલી ફાઈલની ડાઉનલોડ લિંક મેળવો
+            // 2. Retrieve download URL
             let downloadURL = await snapshot.ref.getDownloadURL();
 
-            // 3. Firestore Database માં ફાઈલની માહિતી સેવ કરો
+            // 3. Store file record in Firestore Database
             await db.collection('uploadedFiles').add({
                 name: fileName,
                 audience: audience,
                 date: new Date().toLocaleDateString(),
-                fileUrl: downloadURL, // ફાઈલની લિંક
-                timestamp: firebase.firestore.FieldValue.serverTimestamp() // શોર્ટિંગ માટે ટાઈમ
+                fileUrl: downloadURL, // File download URL
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() // Server timestamp for sorting
             });
 
             alert(`✅ Success! [${fileName}] uploaded successfully for: [${audience.toUpperCase()}]`);
             document.getElementById('uploadModal').style.display = 'none';
-            fileInput.value = ""; // ઈનપુટ ખાલી કરવા
+            fileInput.value = ""; // Reset file input
         } catch (error) {
             console.error("Upload Error: ", error);
             alert("❌ Upload Failed: " + error.message);
         } finally {
-            uploadBtn.innerText = "Upload File"; // બટન પાછું નોર્મલ
+            uploadBtn.innerText = "Upload File"; // Reset upload button text
             uploadBtn.disabled = false;
         }
     }
-            // --- ડાઉનલોડ હેન્ડલ કરવાનું અપડેટેડ ફંક્શન ---
+            // --- Handle IDE Download & Analytics Tracking ---
             async function handleIDE_Download(fileUrl) {
                 if (!currentLoggedInEmail) {
-                    alert("લ્યા પેલા લોગીન તો કર! (Please Login to Download)");
+                    alert("Please login first to download Anant C++ Studio.");
                     document.getElementById('loginModal').style.display = 'flex';
                     return; 
                 }
 
                 try {
-                    // ૧. કાઉન્ટ વધારવાનું લોજીક 
+                    // 1. Increment download counter
                     let statsRef = db.collection('adminOnlyStats').doc('downloads');
                     await statsRef.set({
                         laptopIDE: firebase.firestore.FieldValue.increment(1)
                     }, { merge: true });
                     
-                    // ૨. નવું લોજીક: કયા યુઝરે ડાઉનલોડ કર્યું તેનો રેકોર્ડ સેવ કરવો
+                    // 2. Record user download log
                     await db.collection('downloadLogs').add({
                         email: currentLoggedInEmail,
                         fileDownloaded: "C++ IDE (Windows)",
                         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        date: new Date().toLocaleString() // તારીખ અને સમય સેવ કરવા
+                        date: new Date().toLocaleString() // Formatted local date and time
                     });
                     
-                    // ૩. ડાઉનલોડ લિંક ખોલો
+                    // 3. Open download link
                     window.open(fileUrl, '_blank');
                 } catch (error) {
                     console.error("Tracking Error: ", error);
@@ -1124,22 +1124,22 @@
                 }
             }
 
-            // --- Admin Panel માં કાઉન્ટ અને યુઝર લિસ્ટ લાવવા ---
+            // --- Admin Panel Live Stats and User Logs ---
             function startFetchingStats() {
-                // ૧. કાઉન્ટ લાવવાનું લોજીક
+                // 1. Listen for real-time counter updates
                 db.collection('adminOnlyStats').doc('downloads').onSnapshot((doc) => {
                     if (doc.exists) {
                         document.getElementById('laptopDownloadCount').innerText = doc.data().laptopIDE || 0;
                     }
                 });
 
-                // ૨. નવું લોજીક: ડાઉનલોડ કરનાર યુઝર્સનું લિસ્ટ લાવવું (નવીનતમ પહેલા દેખાશે)
+                // 2. Listen for latest download logs
                 db.collection('downloadLogs').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                     let listDiv = document.getElementById('userDownloadList');
                     listDiv.innerHTML = ""; 
                     
                     if (snapshot.empty) {
-                        listDiv.innerHTML = "<p style='color:#8b8b99; text-align:center;'>હજુ કોઈએ ડાઉનલોડ કર્યું નથી.</p>";
+                        listDiv.innerHTML = "<p style='color:#8b8b99; text-align:center;'>No downloads recorded yet.</p>";
                         return;
                     }
 
